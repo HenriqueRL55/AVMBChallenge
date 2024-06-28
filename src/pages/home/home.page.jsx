@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { db, auth, storage } from "../../services/firebase";
-import { getDocs, collection, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import {
+  getDocs,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "./../../services/auth";
 
@@ -88,7 +95,7 @@ export const HomePage = () => {
   return (
     <div>
       <button onClick={logout}>Sair</button>
-      
+
       <div>
         <input
           placeholder="Titulo"
@@ -115,7 +122,9 @@ export const HomePage = () => {
               placeholder="Novo Titulo"
               onChange={(e) => setUpdateDocumentTitle(e.target.value)}
             />
-            <button onClick={() => updatedDocumentTitle(document.id)}>Atualizar Título</button>
+            <button onClick={() => updatedDocumentTitle(document.id)}>
+              Atualizar Título
+            </button>
           </div>
         ))}
       </div>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./../../services/auth";
+import { Button, TextField } from "@mui/material";
+import { LoginContainer, FormBox, StyledTypography } from "./login.styles";
 
 export const LoginPage = () => {
   const { signIn, signInWithGoogle, currentUser } = useAuth();
@@ -14,17 +16,56 @@ export const LoginPage = () => {
     }
   }, [currentUser, navigate]);
 
+  const goToRegister = () => {
+    navigate("/register");
+  };
+
   return (
-    <div>
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} value={email} />
-      <input
-        placeholder="Password"
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
-      />
-      <button onClick={() => signIn(email, password)}>Entrar</button>
-      <button onClick={signInWithGoogle}>Entrar com Google</button>
-    </div>
+    <LoginContainer maxWidth="sm">
+      <StyledTypography variant="h4" component="h1" gutterBottom>
+        Login
+      </StyledTypography>
+      <FormBox>
+        <TextField
+          label="Email"
+          variant="outlined"
+          fullWidth
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+        />
+        <TextField
+          label="Password"
+          type="password"
+          variant="outlined"
+          fullWidth
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={() => signIn(email, password)}
+        >
+          Entrar
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          fullWidth
+          onClick={signInWithGoogle}
+        >
+          Entrar com Google
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={goToRegister}
+        >
+          Registrar-se
+        </Button>
+      </FormBox>
+    </LoginContainer>
   );
 };
