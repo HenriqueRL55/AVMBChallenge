@@ -1,8 +1,18 @@
-import React, { useContext } from "react";
-import { AuthContext } from "./Auth";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./../../services/auth";
 
 export const LoginPage = () => {
-  const { email, setEmail, password, setPassword, signIn, signInWithGoogle, logout } = useContext(AuthContext);
+  const { signIn, signInWithGoogle, currentUser } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/home");
+    }
+  }, [currentUser, navigate]);
 
   return (
     <div>
@@ -13,9 +23,8 @@ export const LoginPage = () => {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
       />
-      <button onClick={signIn}> Entrar </button>
-      <button onClick={signInWithGoogle}> Entrar com Google</button>
-      <button onClick={logout}> Sair </button>
+      <button onClick={() => signIn(email, password)}>Entrar</button>
+      <button onClick={signInWithGoogle}>Entrar com Google</button>
     </div>
   );
 };

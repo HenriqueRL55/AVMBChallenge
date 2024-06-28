@@ -1,14 +1,22 @@
-import { useState } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import { auth, googleProvider } from "./firebase";
-import { createUserWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 
-export const Auth = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export const AuthContext = createContext();
 
-  console.log(auth?.currentUser?.email);
+export const AuthProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const signIn = async () => {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  const signIn = async (email, password) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
     } catch (error) {
@@ -33,18 +41,10 @@ export const Auth = () => {
   };
 
   return (
-    <div>
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input
-        placeholder="Password"
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={signIn}> Entrar </button>
-
-      <button onClick={signInWithGoogle}> Entrar com Google</button>
-
-      <button onClick={logout}> Sair </button>
-    </div>
+    <AuthContext.Provider value={{ currentUser, signIn, signInWithGoogle, logout, loading }}>
+      {!loading && children}
+    </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);
