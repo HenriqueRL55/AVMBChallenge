@@ -1,10 +1,15 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import "./styles/App.css";
 import { AuthProvider, useAuth } from "./services/auth";
 import { LoginPage } from "./pages/login/login.page";
 import { RegisterPage } from "./pages/register/register.page";
-import { HomePage } from "./pages/home/home.page";
+import HomePage from "./pages/home/home.page";
 
 const ProtectedRoute = ({ children }) => {
   const { currentUser } = useAuth();
@@ -17,7 +22,7 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/login" element={<LoginPage />} /> teste
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route
             path="/home"

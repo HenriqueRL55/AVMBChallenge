@@ -23,7 +23,6 @@ export const FormBox = styled(Box)`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 100%;
   max-width: 400px;
   padding: 2rem;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);

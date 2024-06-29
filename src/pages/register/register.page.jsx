@@ -19,7 +19,7 @@ export const RegisterPage = () => {
   return (
     <RegisterContainer maxWidth="sm">
       <Typography variant="h4" component="h1" gutterBottom>
-        Register
+        Registrar
       </Typography>
       <FormBox>
         <TextField
