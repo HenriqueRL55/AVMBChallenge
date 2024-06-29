@@ -3,6 +3,7 @@ import axios from "axios";
 const apiURLFetch = axios.create({
   baseURL: "/api",
   headers: {
+    "Accept": "application/json",
     "Content-Type": "application/json",
   },
 });
@@ -12,11 +13,16 @@ const token =
 
 const fetchService = async (serviceName, params) => {
   try {
-    const response = await apiURLFetch.post(`/${serviceName}`, {
+    const requestBody = {
       token: token,
       params: params,
-    });
-    console.log("Response:", response.data);
+    };
+
+    console.log("Request Body:", requestBody); // Log the request body
+
+    const response = await apiURLFetch.post(`/${serviceName}`, requestBody);
+    console.log("Response:", response.data); // Log the response data
+
     return response.data;
   } catch (error) {
     console.error("Error fetching service:", error.response?.data || error.message);

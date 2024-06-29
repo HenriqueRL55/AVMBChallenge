@@ -1,34 +1,51 @@
 import React, { useState } from "react";
-import DocumentForm from "../../components/DocumentForm";
-import DocumentList from "../../components/DocumentList";
+import { Container, Box, Button } from "@mui/material";
+import RepositoryCreation from "../../components/RepositoryCreation/repositoryCreation";
+import RepositoryList from "../../components/RepositoryList/repositoryList";
+import DocumentCreation from "../../components/DocumentCreation/documentCreation";
+import useRepositories from "../../hooks/useRepositories";
 import useDocuments from "../../hooks/useDocuments";
 import { useAuth } from "../../services/auth";
-import { Container, Box, Button } from "@mui/material";
 
 const HomePage = () => {
   const { logout } = useAuth();
   const {
-    documentList,
+    repositoryList,
+    createRepository,
     message,
+    getEnvelopesByRepository,
+  } = useRepositories();
+  const {
+    isModalOpen,
+    openModal,
+    closeModal,
+    newEnvelope,
+    updateNewEnvelope,
+    addSignatory,
+    updateSignatory,
     createEnvelope,
-    deleteDocument,
-    updateDocumentTitle,
   } = useDocuments();
 
-  const [newDocumentTitle, setNewDocumentTitle] = useState("");
-  const [newDocumentReceiver, setNewDocumentReceiver] = useState("");
-  const [newDocumentSignatory, setNewDocumentSignatory] = useState("");
-  const [newDocumentFile, setNewDocumentFile] = useState(null);
-  const [newDocumentStatus, setNewDocumentStatus] = useState("");
-  const [updatedDocumentTitle, setUpdateDocumentTitle] = useState("");
+  const [newRepositoryName, setNewRepositoryName] = useState("");
+  const [envelopes, setEnvelopes] = useState({});
+  const [activeTab, setActiveTab] = useState(0);
 
-  const handleCreateEnvelope = () => {
-    createEnvelope(
-      newDocumentTitle,
-      newDocumentFile,
-      newDocumentReceiver,
-      newDocumentSignatory
-    );
+  const handleCreateRepository = () => {
+    createRepository(newRepositoryName);
+  };
+
+  const handleAccordionChange = async (repositoryId) => {
+    if (!envelopes[repositoryId]) {
+      const repositoryEnvelopes = await getEnvelopesByRepository(repositoryId);
+      setEnvelopes((prevEnvelopes) => ({
+        ...prevEnvelopes,
+        [repositoryId]: repositoryEnvelopes,
+      }));
+    }
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
   };
 
   return (
@@ -39,22 +56,34 @@ const HomePage = () => {
         </Button>
       </Box>
 
-      <DocumentForm
-        createEnvelope={handleCreateEnvelope}
-        setNewDocumentTitle={setNewDocumentTitle}
-        setNewDocumentReceiver={setNewDocumentReceiver}
-        setNewDocumentSignatory={setNewDocumentSignatory}
-        setNewDocumentFile={setNewDocumentFile}
-        setNewDocumentStatus={setNewDocumentStatus}
-      />
+      <Box display="flex" gap={0} marginBottom={2}>
+        <RepositoryCreation
+          createRepository={handleCreateRepository}
+          setNewRepositoryName={setNewRepositoryName}
+        />{" "}
+        <Button variant="contained" color="primary" onClick={openModal}>
+          Criar Novo Envelope
+        </Button>
+      </Box>
 
       {message && <p>{message}</p>}
 
-      <DocumentList
-        documentList={documentList}
-        deleteDocument={deleteDocument}
-        updatedDocumentTitle={updatedDocumentTitle}
-        setUpdateDocumentTitle={setUpdateDocumentTitle}
+      <RepositoryList
+        repositoryList={repositoryList}
+        envelopes={envelopes}
+        handleAccordionChange={handleAccordionChange}
+      />
+
+      <DocumentCreation
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        activeTab={activeTab}
+        handleTabChange={handleTabChange}
+        newEnvelope={newEnvelope}
+        updateNewEnvelope={updateNewEnvelope}
+        addSignatory={addSignatory}
+        updateSignatory={updateSignatory}
+        createEnvelope={createEnvelope}
       />
     </Container>
   );
