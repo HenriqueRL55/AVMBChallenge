@@ -1,5 +1,17 @@
 import React from "react";
-import { Box, Button, Modal, Tabs, Tab, TextField, Typography, List, ListItem, ListItemText } from "@mui/material";
+import {
+  Box,
+  Button,
+  Modal,
+  Tabs,
+  Tab,
+  TextField,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Autocomplete,
+} from "@mui/material";
 
 const DocumentCreation = ({
   isModalOpen,
@@ -10,12 +22,28 @@ const DocumentCreation = ({
   updateNewEnvelope,
   addSignatory,
   updateSignatory,
-  createEnvelope
+  createEnvelope,
+  repositoryList,
 }) => {
+  const selectedRepository =
+    repositoryList.find((repo) => repo.id === newEnvelope.repositoryId) || null;
+
   return (
     <Modal open={isModalOpen} onClose={closeModal}>
-      <Box sx={{ width: 600, bgcolor: 'background.paper', p: 4, margin: 'auto', marginTop: '5%' }}>
-        <Tabs value={activeTab} onChange={handleTabChange} aria-label="envelope creation tabs">
+      <Box
+        sx={{
+          width: "80%",
+          bgcolor: "background.paper",
+          p: 4,
+          margin: "auto",
+          marginTop: "5%",
+        }}
+      >
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          aria-label="envelope creation tabs"
+        >
           <Tab label="Anexar Arquivo" />
           <Tab label="Descrição e Repositório" />
           <Tab label="Signatários" />
@@ -41,13 +69,22 @@ const DocumentCreation = ({
               value={newEnvelope.description}
               onChange={(e) => updateNewEnvelope("description", e.target.value)}
             />
-            <TextField
-              label="ID do Repositório"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={newEnvelope.repositoryId}
-              onChange={(e) => updateNewEnvelope("repositoryId", e.target.value)}
+            <Autocomplete
+              options={repositoryList}
+              getOptionLabel={(option) => option.nome}
+              value={selectedRepository} // Set the value of the Autocomplete
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Repositório"
+                  variant="outlined"
+                  margin="normal"
+                />
+              )}
+              onChange={(event, value) => {
+                updateNewEnvelope("repositoryId", value ? value.id : "");
+                updateNewEnvelope("repositoryName", value ? value.nome : "");
+              }}
             />
           </Box>
         )}
@@ -61,35 +98,60 @@ const DocumentCreation = ({
                   variant="outlined"
                   fullWidth
                   value={signatory.name}
-                  onChange={(e) => updateSignatory(index, "name", e.target.value)}
+                  onChange={(e) =>
+                    updateSignatory(index, "name", e.target.value)
+                  }
                 />
                 <TextField
                   label="Email"
                   variant="outlined"
                   fullWidth
                   value={signatory.email}
-                  onChange={(e) => updateSignatory(index, "email", e.target.value)}
+                  onChange={(e) =>
+                    updateSignatory(index, "email", e.target.value)
+                  }
                 />
               </Box>
             ))}
-            <Button variant="contained" onClick={addSignatory}>Adicionar Signatário</Button>
+            <Button variant="contained" onClick={addSignatory}>
+              Adicionar Signatário
+            </Button>
           </Box>
         )}
         {activeTab === 3 && (
           <Box p={3}>
             <Typography>Resumo</Typography>
-            <Typography><strong>Arquivo:</strong> {newEnvelope.file ? newEnvelope.file.name : "Nenhum arquivo selecionado"}</Typography>
-            <Typography><strong>Descrição:</strong> {newEnvelope.description}</Typography>
-            <Typography><strong>Repositório:</strong> {newEnvelope.repositoryId}</Typography>
-            <Typography><strong>Signatários:</strong></Typography>
+            <Typography>
+              <strong>Arquivo:</strong>{" "}
+              {newEnvelope.file
+                ? newEnvelope.file.name
+                : "Nenhum arquivo selecionado"}
+            </Typography>
+            <Typography>
+              <strong>Descrição:</strong> {newEnvelope.description}
+            </Typography>
+            <Typography>
+              <strong>Repositório:</strong> {newEnvelope.repositoryName} (
+              {newEnvelope.repositoryId})
+            </Typography>
+            <Typography>
+              <strong>Signatários:</strong>
+            </Typography>
             <List>
               {newEnvelope.signatories.map((signatory, index) => (
                 <ListItem key={index}>
-                  <ListItemText primary={signatory.name} secondary={signatory.email} />
+                  <ListItemText
+                    primary={signatory.name}
+                    secondary={signatory.email}
+                  />
                 </ListItem>
               ))}
             </List>
-            <Button variant="contained" color="primary" onClick={createEnvelope}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={createEnvelope}
+            >
               Finalizar e Criar Envelope
             </Button>
           </Box>

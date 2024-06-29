@@ -56,11 +56,12 @@ const HomePage = () => {
         </Button>
       </Box>
 
-      <Box display="flex" gap={0} marginBottom={2}>
+      <Box display="flex" gap={2} marginBottom={2}>
+        
         <RepositoryCreation
           createRepository={handleCreateRepository}
           setNewRepositoryName={setNewRepositoryName}
-        />{" "}
+        />
         <Button variant="contained" color="primary" onClick={openModal}>
           Criar Novo Envelope
         </Button>
@@ -84,6 +85,7 @@ const HomePage = () => {
         addSignatory={addSignatory}
         updateSignatory={updateSignatory}
         createEnvelope={createEnvelope}
+        repositoryList={repositoryList}
       />
     </Container>
   );

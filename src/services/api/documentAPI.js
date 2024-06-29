@@ -3,7 +3,7 @@ import axios from "axios";
 const apiURLFetch = axios.create({
   baseURL: "/api",
   headers: {
-    "Accept": "application/json",
+    Accept: "application/json",
     "Content-Type": "application/json",
   },
 });
@@ -18,14 +18,17 @@ const fetchService = async (serviceName, params) => {
       params: params,
     };
 
-    console.log("Request Body:", requestBody); // Log the request body
+    console.log("Request Body:", requestBody); 
 
     const response = await apiURLFetch.post(`/${serviceName}`, requestBody);
-    console.log("Response:", response.data); // Log the response data
+    console.log("Response:", response.data);
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching service:", error.response?.data || error.message);
+    console.error(
+      "Error fetching service:",
+      error.response?.data || error.message
+    );
     return { error: error.response?.data || error.message };
   }
 };

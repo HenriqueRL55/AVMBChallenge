@@ -8,14 +8,21 @@ const useRepositories = () => {
   const getRepositories = async () => {
     try {
       const repositoryParams = {
-        idProprietario: 31810
+        idProprietario: 31810,
       };
 
-      const repositoryResponse = await fetchService('getRepositoriosDoUsuario', repositoryParams);
+      const repositoryResponse = await fetchService(
+        "getRepositoriosDoUsuario",
+        repositoryParams
+      );
       if (repositoryResponse?.response) {
         setRepositoryList(repositoryResponse.response);
       } else if (repositoryResponse?.error) {
-        setMessage(`Erro ao buscar repositórios: ${JSON.stringify(repositoryResponse.error)}`);
+        setMessage(
+          `Erro ao buscar repositórios: ${JSON.stringify(
+            repositoryResponse.error
+          )}`
+        );
       }
     } catch (error) {
       setMessage("Erro ao buscar repositórios");
@@ -41,15 +48,22 @@ const useRepositories = () => {
           opcaoValidReconhecFacial: "S",
           opcaoValidPix: "S",
           lembrarAssinPendentes: "S",
-        }
+        },
       };
 
-      const repositoryResponse = await fetchService('inserirRepositorio', repositoryParams);
+      const repositoryResponse = await fetchService(
+        "inserirRepositorio",
+        repositoryParams
+      );
       if (repositoryResponse?.response) {
         setMessage("Repositório criado com sucesso!");
-        getRepositories(); 
+        getRepositories();
       } else if (repositoryResponse?.error) {
-        setMessage(`Erro ao criar repositório: ${JSON.stringify(repositoryResponse.error)}`);
+        setMessage(
+          `Erro ao criar repositório: ${JSON.stringify(
+            repositoryResponse.error
+          )}`
+        );
       }
     } catch (error) {
       setMessage("Erro ao criar repositório");
@@ -59,15 +73,38 @@ const useRepositories = () => {
 
   const getEnvelopesByRepository = async (repositoryId) => {
     try {
-      const envelopeParams = {
-        idRepositorio: repositoryId
+      const envelopesParams = {
+        idRepositorio: repositoryId,
       };
-
-      const envelopeResponse = await fetchService('getEnvelopesByRepositorioOuPasta', envelopeParams);
-      if (envelopeResponse?.response) {
-        return envelopeResponse.response;
-      } else if (envelopeResponse?.error) {
-        setMessage(`Erro ao buscar envelopes: ${JSON.stringify(envelopeResponse.error)}`);
+      const envelopesResponse = await fetchService(
+        "getEnvelopesByRepositorioOuPasta",
+        envelopesParams
+      );
+      if (envelopesResponse?.response) {
+        const envelopesWithStatus = await Promise.all(
+          envelopesResponse.response.map(async (envelope) => {
+            const envelopeDetailsParams = {
+              idEnvelope: envelope.id,
+              getLobs: "N",
+            };
+            const envelopeDetailsResponse = await fetchService(
+              "getDadosEnvelope",
+              envelopeDetailsParams
+            );
+            if (envelopeDetailsResponse?.response) {
+              return {
+                ...envelope,
+                status: envelopeDetailsResponse.response.status,
+              };
+            }
+            return envelope;
+          })
+        );
+        return envelopesWithStatus;
+      } else {
+        setMessage(
+          `Erro ao buscar envelopes: ${JSON.stringify(envelopesResponse.error)}`
+        );
         return [];
       }
     } catch (error) {
@@ -85,7 +122,7 @@ const useRepositories = () => {
     repositoryList,
     message,
     createRepository,
-    getEnvelopesByRepository
+    getEnvelopesByRepository,
   };
 };
 
