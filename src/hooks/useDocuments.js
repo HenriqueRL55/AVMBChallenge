@@ -6,6 +6,8 @@ const useDocuments = () => {
   const [documentList, setDocumentList] = useState([]);
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [newEnvelope, setNewEnvelope] = useState({
     file: null,
     description: "",
@@ -115,7 +117,13 @@ const useDocuments = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetchService("encaminharEnvelopeParaAssinaturas", { idEnvelope });
+      const response = await fetchService("encaminharEnvelopeParaAssinaturas", {
+        Envelope: { id: idEnvelope },
+        agendarEnvio: "N",
+        detectarCampos: "N",
+        dataEnvioAgendado: null,
+        horaEnvioAgendado: null,
+      });
       return response;
     } catch (err) {
       setError(err);
@@ -129,6 +137,8 @@ const useDocuments = () => {
     documentList,
     message,
     isModalOpen,
+    loading,
+    error,
     openModal,
     closeModal,
     newEnvelope,

@@ -8,18 +8,30 @@ import {
   ListItem,
   ListItemText,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import { Edit } from "@mui/icons-material";
+import { Edit, Send } from "@mui/icons-material";
 import {
   TypographyCreation,
   WhiteExpandMoreIcon,
 } from "./respositoryList.style";
 import SignatariosModal from "../SignatariosModal/signatariosModal.component";
+import ForwardAssignModal from "../ForwardAssignModal/forwardAssignModal.component";
+import useDocuments from "../../hooks/useDocuments";
 
-const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) => {
+const RepositoryList = ({
+  repositoryList,
+  envelopes,
+  handleAccordionChange,
+}) => {
   const [loadingEnvelopes, setLoadingEnvelopes] = useState({});
   const [selectedEnvelope, setSelectedEnvelope] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSignatariosModalOpen, setIsSignatariosModalOpen] = useState(false);
+  const [isForwardAssignModalOpen, setIsForwardAssignModalOpen] =
+    useState(false);
+  const [message, setMessage] = useState("");
+  const { encaminharEnvelopeParaAssinaturas } = useDocuments();
 
   const getStatusDescription = (status) => {
     switch (status) {
@@ -49,12 +61,38 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
 
   const openSignatariosModal = (envelopeId) => {
     setSelectedEnvelope(envelopeId);
-    setIsModalOpen(true);
+    setIsSignatariosModalOpen(true);
   };
 
   const closeSignatariosModal = () => {
-    setIsModalOpen(false);
+    setIsSignatariosModalOpen(false);
     setSelectedEnvelope(null);
+  };
+
+  const openForwardAssignModal = (envelope) => {
+    if (envelope.status !== "1") {
+      setMessage("Esse envelope já foi encaminhado para assinatura.");
+      return;
+    }
+    setSelectedEnvelope(envelope.id);
+    setIsForwardAssignModalOpen(true);
+  };
+
+  const closeForwardAssignModal = () => {
+    setIsForwardAssignModalOpen(false);
+    setSelectedEnvelope(null);
+  };
+
+  const handleConfirm = async () => {
+    try {
+      await encaminharEnvelopeParaAssinaturas(selectedEnvelope);
+      setMessage("Envelope encaminhado para assinatura com sucesso!");
+    } catch (error) {
+      setMessage("Erro ao encaminhar envelope para assinatura.");
+      console.error("Erro ao encaminhar envelope para assinaturas:", error);
+    } finally {
+      closeForwardAssignModal();
+    }
   };
 
   return (
@@ -77,13 +115,28 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
                 <TypographyCreation>Carregando envelopes...</TypographyCreation>
               ) : (
                 <List>
-                  {envelopes[repository.id] && envelopes[repository.id].length > 0 ? (
+                  {envelopes[repository.id] &&
+                  envelopes[repository.id].length > 0 ? (
                     envelopes[repository.id].map((envelope) => (
-                      <ListItem key={envelope.id} secondaryAction={
-                        <IconButton edge="end" onClick={() => openSignatariosModal(envelope.id)}>
-                          <Edit />
-                        </IconButton>
-                      }>
+                      <ListItem
+                        key={envelope.id}
+                        secondaryAction={
+                          <>
+                            <IconButton
+                              edge="end"
+                              onClick={() => openSignatariosModal(envelope.id)}
+                            >
+                              <Edit />
+                            </IconButton>
+                            <IconButton
+                              edge="end"
+                              onClick={() => openForwardAssignModal(envelope)}
+                            >
+                              <Send />
+                            </IconButton>
+                          </>
+                        }
+                      >
                         <ListItemText
                           primary={envelope.descricao}
                           secondary={`Status: ${getStatusDescription(
@@ -106,10 +159,24 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
         </Accordion>
       ))}
       <SignatariosModal
-        open={isModalOpen}
+        open={isSignatariosModalOpen}
         onClose={closeSignatariosModal}
         envelopeId={selectedEnvelope}
       />
+      <ForwardAssignModal
+        open={isForwardAssignModalOpen}
+        onClose={closeForwardAssignModal}
+        onConfirm={handleConfirm}
+      />
+      {message && (
+        <Snackbar
+          open={Boolean(message)}
+          autoHideDuration={5000}
+          onClose={() => setMessage("")}
+        >
+          <Alert severity="info">{message}</Alert>
+        </Snackbar>
+      )}
     </>
   );
 };
