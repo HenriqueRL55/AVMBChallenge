@@ -1,16 +1,19 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../services/auth";
 import { Button, TextField, Typography } from "@mui/material";
 import { RegisterContainer, FormBox } from "./register.styles";
 
 export const RegisterPage = () => {
   const { signUp } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleRegister = async () => {
     try {
       await signUp(email, password);
+      navigate("/home");
     } catch (error) {
       console.error(error);
     }
@@ -49,3 +52,5 @@ export const RegisterPage = () => {
     </RegisterContainer>
   );
 };
+
+export default RegisterPage;

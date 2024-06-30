@@ -1,13 +1,4 @@
 import { useState } from "react";
-import { db, auth } from "../services/firebase";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
 import fetchService from "../services/api/documentAPI";
 import { readFileAsBase64 } from "../utils/fileUtils";
 
@@ -19,7 +10,7 @@ const useDocuments = () => {
     file: null,
     description: "",
     repositoryId: "",
-    repositoryName: "", // Add repositoryName to state
+    repositoryName: "",
     signatories: [],
   });
 
@@ -107,21 +98,30 @@ const useDocuments = () => {
         processarImagensEmSegundoPlano: "N",
       };
 
-      const envelopeResponse = await fetchService(
-        "inserirEnvelope",
-        envelopeParams
-      );
+      const envelopeResponse = await fetchService("inserirEnvelope", envelopeParams);
       if (envelopeResponse?.response) {
         setMessage("Envelope criado com sucesso!");
         closeModal();
       } else if (envelopeResponse?.error) {
-        setMessage(
-          `Erro ao criar envelope: ${JSON.stringify(envelopeResponse.error)}`
-        );
+        setMessage(`Erro ao criar envelope: ${JSON.stringify(envelopeResponse.error)}`);
       }
     } catch (error) {
       setMessage("Erro ao criar envelope");
       console.error("Error creating envelope:", error);
+    }
+  };
+
+  const encaminharEnvelopeParaAssinaturas = async (idEnvelope) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetchService("encaminharEnvelopeParaAssinaturas", { idEnvelope });
+      return response;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -136,6 +136,7 @@ const useDocuments = () => {
     addSignatory,
     updateSignatory,
     createEnvelope,
+    encaminharEnvelopeParaAssinaturas,
   };
 };
 
