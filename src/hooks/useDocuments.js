@@ -147,6 +147,34 @@ const useDocuments = () => {
     }
   };
 
+  const consultarEnvelope = async (envelopeIdOrName) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetchService("consultarEnvelope", { envelopeIdOrName });
+      return response;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSignatariosPorEnvelope = async (idEnvelope) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetchService("getSignatariosPorEnvelope", { idEnvelope });
+      return response;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     documentList,
     message,
@@ -162,6 +190,8 @@ const useDocuments = () => {
     createEnvelope,
     encaminharEnvelopeParaAssinaturas,
     expurgarEnvelope,
+    consultarEnvelope,
+    getSignatariosPorEnvelope,
   };
 };
 

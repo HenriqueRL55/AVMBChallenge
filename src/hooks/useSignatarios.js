@@ -10,7 +10,9 @@ const useSignatarios = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetchService("getSignatariosPorEnvelope", { idEnvelope });
+      const response = await fetchService("getSignatariosPorEnvelope", {
+        idEnvelope,
+      });
       setSignatarios(response.response);
     } catch (err) {
       setError(err);
@@ -23,7 +25,9 @@ const useSignatarios = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetchService("atualizarSignatarioEnvelope", { SignatarioEnvelope: signatarioEnvelope });
+      const response = await fetchService("atualizarSignatarioEnvelope", {
+        SignatarioEnvelope: signatarioEnvelope,
+      });
       return response;
     } catch (err) {
       setError(err);
@@ -37,7 +41,10 @@ const useSignatarios = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetchService("excluirSignatarioEnvelope", { idSignatarioEnv, exclusaoDeGrupo: "N" });
+      const response = await fetchService("excluirSignatarioEnvelope", {
+        idSignatarioEnv,
+        exclusaoDeGrupo: "N",
+      });
       return response;
     } catch (err) {
       setError(err);
@@ -51,7 +58,9 @@ const useSignatarios = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetchService("inserirSignatarioEnvelope", { SignatarioEnvelope: signatarioEnvelope });
+      const response = await fetchService("inserirSignatarioEnvelope", {
+        SignatarioEnvelope: signatarioEnvelope,
+      });
       return response;
     } catch (err) {
       setError(err);

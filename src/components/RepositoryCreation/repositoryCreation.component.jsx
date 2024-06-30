@@ -1,5 +1,9 @@
 import React from "react";
-import { FormContainer, Input, CreateButton } from "./repositoryCreation.styles";
+import {
+  FormContainer,
+  Input,
+  CreateButton,
+} from "./repositoryCreation.styles";
 
 const RepositoryCreation = ({ createRepository, setNewRepositoryName }) => {
   return (

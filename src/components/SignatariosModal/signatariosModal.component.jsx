@@ -9,9 +9,9 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { Edit, Delete, Add } from "@mui/icons-material";
+import { Edit, Delete, Add, Send } from "@mui/icons-material";
 import useSignatarios from "../../hooks/useSignatarios";
-import { Typography } from "./signatariosModal.styles";
+import { StyledTypography as Typography } from "./signatariosModal.styles";
 
 const SignatariosModal = ({ open, onClose, envelopeId }) => {
   const {
@@ -22,11 +22,13 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
     atualizarSignatarioEnvelope,
     excluirSignatarioEnvelope,
     inserirSignatarioEnvelope,
+    encaminharEnvelopeParaAssinaturas,
   } = useSignatarios();
   const [editSignatario, setEditSignatario] = useState(null);
   const [editData, setEditData] = useState({});
   const [newSignatarios, setNewSignatarios] = useState([]);
   const [warning, setWarning] = useState("");
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -44,8 +46,8 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
       await atualizarSignatarioEnvelope({
         id: editSignatario,
         Envelope: { id: envelopeId },
-        ordem: 1, // Ajustar conforme necessário
-        status: 1, // Ajustar conforme necessário
+        ordem: 1,
+        status: 1,
         ConfigAssinatura: editData,
       });
       setEditSignatario(null);
@@ -76,7 +78,10 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
   };
 
   const handleAddNewSignatario = () => {
-    setNewSignatarios([...newSignatarios, { nomeSignatario: "", emailSignatario: "" }]);
+    setNewSignatarios([
+      ...newSignatarios,
+      { nomeSignatario: "", emailSignatario: "" },
+    ]);
   };
 
   const handleNewSignatarioChange = (index, field, value) => {
@@ -115,28 +120,60 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
     }
   };
 
+  const openConfirmModal = () => setIsConfirmModalOpen(true);
+  const closeConfirmModal = () => setIsConfirmModalOpen(false);
+
+  const handleConfirm = async () => {
+    try {
+      await encaminharEnvelopeParaAssinaturas(envelopeId);
+      setIsConfirmModalOpen(false);
+      onClose();
+    } catch (error) {
+      console.error("Erro ao encaminhar envelope para assinaturas:", error);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose}>
-      <Box sx={{ width: 400, p: 4, bgcolor: "background.paper", m: "auto", mt: 10 }}>
+      <Box
+        sx={{
+          width: 400,
+          p: 4,
+          bgcolor: "background.paper",
+          m: "auto",
+          mt: 10,
+        }}
+      >
         <Typography variant="h6">Signatários</Typography>
         {loading && <CircularProgress />}
         {error && <Typography color="error">{error.message}</Typography>}
         {warning && (
-          <Snackbar open={Boolean(warning)} autoHideDuration={5000} onClose={() => setWarning("")}>
+          <Snackbar
+            open={Boolean(warning)}
+            autoHideDuration={5000}
+            onClose={() => setWarning("")}
+          >
             <Alert severity="warning">{warning}</Alert>
           </Snackbar>
         )}
-        {signatarios.map((signatario) => (
-          <Box key={signatario.id} display="flex" alignItems="center" mb={1}>
-            <Typography variant="body1">{signatario.ConfigAssinatura.nomeSignatario || "Sem Nome"} ({signatario.ConfigAssinatura.emailSignatario})</Typography>
-            <IconButton onClick={() => handleEdit(signatario)}>
-              <Edit />
-            </IconButton>
-            <IconButton onClick={() => handleDelete(signatario.id)}>
-              <Delete />
-            </IconButton>
-          </Box>
-        ))}
+        {signatarios && Array.isArray(signatarios) && signatarios.length > 0 ? (
+          signatarios.map((signatario) => (
+            <Box key={signatario.id} display="flex" alignItems="center" mb={1}>
+              <Typography variant="body1">
+                {signatario.ConfigAssinatura.nomeSignatario || "Sem Nome"} (
+                {signatario.ConfigAssinatura.emailSignatario})
+              </Typography>
+              <IconButton onClick={() => handleEdit(signatario)}>
+                <Edit />
+              </IconButton>
+              <IconButton onClick={() => handleDelete(signatario.id)}>
+                <Delete />
+              </IconButton>
+            </Box>
+          ))
+        ) : (
+          <Typography>Nenhum signatário encontrado.</Typography>
+        )}
         {editSignatario && (
           <Box>
             <TextField
@@ -157,7 +194,11 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
             <Button onClick={handleUpdate} variant="contained" color="primary">
               Atualizar
             </Button>
-            <Button onClick={() => setEditSignatario(null)} variant="outlined" color="secondary">
+            <Button
+              onClick={() => setEditSignatario(null)}
+              variant="outlined"
+              color="secondary"
+            >
               Cancelar
             </Button>
           </Box>
@@ -167,14 +208,26 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
             <TextField
               label="Nome"
               value={signatario.nomeSignatario}
-              onChange={(e) => handleNewSignatarioChange(index, "nomeSignatario", e.target.value)}
+              onChange={(e) =>
+                handleNewSignatarioChange(
+                  index,
+                  "nomeSignatario",
+                  e.target.value
+                )
+              }
               fullWidth
               margin="normal"
             />
             <TextField
               label="Email"
               value={signatario.emailSignatario}
-              onChange={(e) => handleNewSignatarioChange(index, "emailSignatario", e.target.value)}
+              onChange={(e) =>
+                handleNewSignatarioChange(
+                  index,
+                  "emailSignatario",
+                  e.target.value
+                )
+              }
               fullWidth
               margin="normal"
             />
@@ -187,7 +240,12 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
         </Box>
         {newSignatarios.length > 0 && (
           <Box mt={2}>
-            <Button onClick={handleSaveNewSignatarios} variant="contained" color="primary" fullWidth>
+            <Button
+              onClick={handleSaveNewSignatarios}
+              variant="contained"
+              color="primary"
+              fullWidth
+            >
               Salvar Novos Signatários
             </Button>
           </Box>

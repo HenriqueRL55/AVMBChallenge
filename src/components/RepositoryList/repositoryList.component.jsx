@@ -1,40 +1,35 @@
-import React, { useState } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, List, ListItem, ListItemText, IconButton, Snackbar, Alert } from "@mui/material";
 import { Edit, Send, Delete } from "@mui/icons-material";
-import {
-  TypographyCreation,
-  WhiteExpandMoreIcon,
-} from "./respositoryList.style";
+import { TypographyCreation, WhiteExpandMoreIcon } from "./respositoryList.style";
 import SignatariosModal from "../SignatariosModal/signatariosModal.component";
 import ForwardAssignModal from "../ForwardAssignModal/forwardAssignModal.component";
-import DeleteConfirmModal from "../DocumentDelete/documentDeleteModal.component";
 import useDocuments from "../../hooks/useDocuments";
 
-const RepositoryList = ({
-  repositoryList,
-  envelopes,
-  handleAccordionChange,
-}) => {
+const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) => {
   const [loadingEnvelopes, setLoadingEnvelopes] = useState({});
   const [selectedEnvelope, setSelectedEnvelope] = useState(null);
   const [isSignatariosModalOpen, setIsSignatariosModalOpen] = useState(false);
-  const [isForwardAssignModalOpen, setIsForwardAssignModalOpen] =
-    useState(false);
-  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
-    useState(false);
+  const [isForwardAssignModalOpen, setIsForwardAssignModalOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const { encaminharEnvelopeParaAssinaturas, expurgarEnvelope } = useDocuments();
+  const [alertSeverity, setAlertSeverity] = useState("info");
+  const [signatarios, setSignatarios] = useState([]);
+  const { encaminharEnvelopeParaAssinaturas, expurgarEnvelope, getSignatariosPorEnvelope } = useDocuments();
+
+  useEffect(() => {
+    if (selectedEnvelope) {
+      fetchSignatarios(selectedEnvelope);
+    }
+  }, [selectedEnvelope]);
+
+  const fetchSignatarios = async (envelopeId) => {
+    try {
+      const response = await getSignatariosPorEnvelope(envelopeId);
+      setSignatarios(response || []);
+    } catch (error) {
+      console.error("Erro ao buscar signatários:", error);
+    }
+  };
 
   const getStatusDescription = (status) => {
     switch (status) {
@@ -72,9 +67,36 @@ const RepositoryList = ({
     setSelectedEnvelope(null);
   };
 
-  const openForwardAssignModal = (envelope) => {
+  const handleConfirm = async () => {
+    if (!signatarios || signatarios.length === 0) {
+      setAlertSeverity("warning");
+      setMessage("Não foi possível enviar pois não há signatários vinculados a esse envelope.");
+      return true;
+    }
+    try {
+      await encaminharEnvelopeParaAssinaturas(selectedEnvelope);
+      setAlertSeverity("success");
+      setMessage("Envelope encaminhado para assinatura com sucesso!");
+    } catch (error) {
+      setAlertSeverity("error");
+      setMessage("Erro ao encaminhar envelope para assinatura.");
+      console.error("Erro ao encaminhar envelope para assinaturas:", error);
+    } finally {
+      closeForwardAssignModal();
+    }
+    return false;
+  };
+
+  const openForwardAssignModal = async (envelope) => {
     if (envelope.status !== "1") {
+      setAlertSeverity("warning");
       setMessage("Esse envelope já foi encaminhado para assinatura.");
+      return;
+    }
+    await fetchSignatarios(envelope.id);
+    if (!signatarios || signatarios.length === 0) {
+      setAlertSeverity("warning");
+      setMessage("Não foi possível enviar pois não há signatários vinculados a esse envelope.");
       return;
     }
     setSelectedEnvelope(envelope.id);
@@ -86,41 +108,20 @@ const RepositoryList = ({
     setSelectedEnvelope(null);
   };
 
-  const openDeleteConfirmModal = (envelope) => {
-    if (envelope.status === "2") {
-      setMessage("Não é possível excluir um envelope que está aguardando assinatura.");
+  const handleDelete = async (envelopeId, status) => {
+    if (status === "2") {
+      setAlertSeverity("warning");
+      setMessage("Não é possível excluir um envelope aguardando assinatura.");
       return;
     }
-    setSelectedEnvelope(envelope.id);
-    setIsDeleteConfirmModalOpen(true);
-  };
-
-  const closeDeleteConfirmModal = () => {
-    setIsDeleteConfirmModalOpen(false);
-    setSelectedEnvelope(null);
-  };
-
-  const handleConfirm = async () => {
     try {
-      await encaminharEnvelopeParaAssinaturas(selectedEnvelope);
-      setMessage("Envelope encaminhado para assinatura com sucesso!");
-    } catch (error) {
-      setMessage("Erro ao encaminhar envelope para assinatura.");
-      console.error("Erro ao encaminhar envelope para assinaturas:", error);
-    } finally {
-      closeForwardAssignModal();
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await expurgarEnvelope(selectedEnvelope);
+      await expurgarEnvelope(envelopeId);
+      setAlertSeverity("success");
       setMessage("Envelope excluído com sucesso!");
     } catch (error) {
+      setAlertSeverity("error");
       setMessage("Erro ao excluir envelope.");
       console.error("Erro ao excluir envelope:", error);
-    } finally {
-      closeDeleteConfirmModal();
     }
   };
 
@@ -165,7 +166,9 @@ const RepositoryList = ({
                             </IconButton>
                             <IconButton
                               edge="end"
-                              onClick={() => openDeleteConfirmModal(envelope)}
+                              onClick={() =>
+                                handleDelete(envelope.id, envelope.status)
+                              }
                             >
                               <Delete />
                             </IconButton>
@@ -203,18 +206,13 @@ const RepositoryList = ({
         onClose={closeForwardAssignModal}
         onConfirm={handleConfirm}
       />
-      <DeleteConfirmModal
-        open={isDeleteConfirmModalOpen}
-        onClose={closeDeleteConfirmModal}
-        onConfirm={handleDelete}
-      />
       {message && (
         <Snackbar
           open={Boolean(message)}
           autoHideDuration={5000}
           onClose={() => setMessage("")}
         >
-          <Alert severity="info">{message}</Alert>
+          <Alert severity={alertSeverity}>{message}</Alert>
         </Snackbar>
       )}
     </>

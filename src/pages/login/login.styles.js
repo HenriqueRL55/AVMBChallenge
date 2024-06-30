@@ -8,7 +8,7 @@ export const LoginContainer = styled(Container)`
   height: 100vh;
   min-width: 100vw;
   align-content: center;
-  color: #EEEEEE;
+  color: #eeeeee;
 `;
 
 export const RegisterContainer = styled(Container)`
@@ -32,5 +32,5 @@ export const FormBox = styled(Box)`
   padding: 2rem;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  background-color: #EEEEEE;
+  background-color: #eeeeee;
 `;

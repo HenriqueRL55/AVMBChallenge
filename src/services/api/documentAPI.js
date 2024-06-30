@@ -18,7 +18,7 @@ const fetchService = async (serviceName, params) => {
       params: params,
     };
 
-    console.log("Request Body:", requestBody); 
+    console.log("Request Body:", requestBody);
 
     const response = await apiURLFetch.post(`/${serviceName}`, requestBody);
     console.log("Response:", response.data);

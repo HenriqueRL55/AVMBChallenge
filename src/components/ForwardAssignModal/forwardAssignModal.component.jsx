@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, Box, Button, Typography as MuiTypography } from "@mui/material";
-import { Typography } from "./forwardAssignModal.styles";
+import { StyledTypography as Typography } from "./forwardAssignModal.styles";
 
 const ForwardAssignModal = ({ open, onClose, onConfirm }) => {
   return (
@@ -19,7 +19,7 @@ const ForwardAssignModal = ({ open, onClose, onConfirm }) => {
           Deseja mesmo encaminhar este envelope para assinatura?
         </Typography>
         <Box mt={2} display="flex" justifyContent="space-between">
-          <Button onClick={onClose} variant="contained" color="primary">
+          <Button onClick={onClose} variant="outlined" color="secondary">
             Cancelar
           </Button>
           <Button onClick={onConfirm} variant="contained" color="primary">

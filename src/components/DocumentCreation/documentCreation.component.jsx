@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -12,6 +12,8 @@ import {
   ListItemText,
   Autocomplete,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -28,8 +30,45 @@ const DocumentCreation = ({
   createEnvelope,
   repositoryList,
 }) => {
+  const [errorMessages, setErrorMessages] = useState([]);
+
   const selectedRepository =
     repositoryList.find((repo) => repo.id === newEnvelope.repositoryId) || null;
+
+  const handleCreateEnvelope = () => {
+    const errors = [];
+
+    if (!newEnvelope.file) {
+      errors.push("Por favor, selecione um arquivo para o documento.");
+    }
+    if (!newEnvelope.description) {
+      errors.push("Por favor, preencha a descrição do envelope.");
+    }
+    if (!newEnvelope.repositoryId) {
+      errors.push("Por favor, selecione um repositório.");
+    }
+
+    newEnvelope.signatories.forEach((signatory, index) => {
+      if (!signatory.name) {
+        errors.push(`Por favor, preencha o nome do signatário ${index + 1}.`);
+      }
+      if (!signatory.email) {
+        errors.push(`Por favor, preencha o email do signatário ${index + 1}.`);
+      }
+    });
+
+    if (errors.length > 0) {
+      setErrorMessages(errors);
+      return;
+    }
+
+    // Chama a função de criação do envelope
+    createEnvelope();
+  };
+
+  const handleCloseSnackbar = () => {
+    setErrorMessages([]);
+  };
 
   return (
     <Modal open={isModalOpen} onClose={closeModal}>
@@ -50,11 +89,11 @@ const DocumentCreation = ({
           value={activeTab}
           onChange={handleTabChange}
           aria-label="envelope creation tabs"
-          TabIndicatorProps={{ style: { display: "none" } }} 
+          TabIndicatorProps={{ style: { display: "none" } }}
           sx={{
             "& .MuiTab-root": {
               "&:focus": {
-                outline: "none", 
+                outline: "none",
               },
             },
           }}
@@ -201,11 +240,24 @@ const DocumentCreation = ({
             <Button
               variant="contained"
               color="primary"
-              onClick={createEnvelope}
+              onClick={handleCreateEnvelope}
             >
               Finalizar e Criar Envelope
             </Button>
           </Box>
+        )}
+        {errorMessages.length > 0 && (
+          <Snackbar
+            open={Boolean(errorMessages.length)}
+            autoHideDuration={5000}
+            onClose={handleCloseSnackbar}
+          >
+            <Alert severity="error">
+              {errorMessages.map((message, index) => (
+                <div key={index}>{message}</div>
+              ))}
+            </Alert>
+          </Snackbar>
         )}
       </Box>
     </Modal>
