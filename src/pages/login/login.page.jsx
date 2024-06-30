@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./../../services/auth";
+import { useAuth } from "../../services/auth";
 import { Button, TextField } from "@mui/material";
 import { LoginContainer, FormBox, StyledTypography } from "./login.styles";
 
@@ -21,8 +21,8 @@ export const LoginPage = () => {
   };
 
   return (
-    <LoginContainer maxWidth="sm">
-      <StyledTypography variant="h4" component="h1" gutterBottom>
+    <LoginContainer>
+      <StyledTypography variant="h4" component="h4" gutterBottom>
         Login
       </StyledTypography>
       <FormBox>

@@ -32,8 +32,12 @@ const DocumentCreation = ({
     <Modal open={isModalOpen} onClose={closeModal}>
       <Box
         sx={{
-          width: "80%",
+          width: "40%",
+          border: "1px solid #1976d2",
           bgcolor: "background.paper",
+          maxHeight: "50%",
+          overflow: "auto",
+          borderRadius: 2,
           p: 4,
           margin: "auto",
           marginTop: "5%",
@@ -43,6 +47,14 @@ const DocumentCreation = ({
           value={activeTab}
           onChange={handleTabChange}
           aria-label="envelope creation tabs"
+          TabIndicatorProps={{ style: { display: "none" } }} // Removes the indicator
+          sx={{
+            "& .MuiTab-root": {
+              "&:focus": {
+                outline: "none", // Removes the focus outline
+              },
+            },
+          }}
         >
           <Tab label="Anexar Arquivo" />
           <Tab label="Descrição e Repositório" />
@@ -51,7 +63,11 @@ const DocumentCreation = ({
         </Tabs>
         {activeTab === 0 && (
           <Box p={3}>
-            <Typography>Anexar Arquivo</Typography>
+            <Typography
+              sx={{ color: "#222831", fontWeight: "bold", mb: 3, fontSize: 20 }}
+            >
+              Anexar Arquivo
+            </Typography>
             <input
               type="file"
               onChange={(e) => updateNewEnvelope("file", e.target.files[0])}
@@ -60,7 +76,11 @@ const DocumentCreation = ({
         )}
         {activeTab === 1 && (
           <Box p={3}>
-            <Typography>Descrição e Repositório</Typography>
+            <Typography
+              sx={{ color: "#222831", fontWeight: "bold", mb: 3, fontSize: 20 }}
+            >
+              Descrição e Repositório
+            </Typography>
             <TextField
               label="Descrição do Envelope"
               variant="outlined"
@@ -72,7 +92,7 @@ const DocumentCreation = ({
             <Autocomplete
               options={repositoryList}
               getOptionLabel={(option) => option.nome}
-              value={selectedRepository} // Set the value of the Autocomplete
+              value={selectedRepository}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -90,12 +110,17 @@ const DocumentCreation = ({
         )}
         {activeTab === 2 && (
           <Box p={3}>
-            <Typography>Signatários</Typography>
+            <Typography
+              sx={{ color: "#222831", fontWeight: "bold", mb: 3, fontSize: 20 }}
+            >
+              Signatários
+            </Typography>
             {newEnvelope.signatories.map((signatory, index) => (
               <Box key={index} display="flex" gap={2} mb={2}>
                 <TextField
                   label="Nome"
                   variant="outlined"
+                  margin="normal"
                   fullWidth
                   value={signatory.name}
                   onChange={(e) =>
@@ -105,6 +130,7 @@ const DocumentCreation = ({
                 <TextField
                   label="Email"
                   variant="outlined"
+                  margin="normal"
                   fullWidth
                   value={signatory.email}
                   onChange={(e) =>
@@ -120,21 +146,25 @@ const DocumentCreation = ({
         )}
         {activeTab === 3 && (
           <Box p={3}>
-            <Typography>Resumo</Typography>
-            <Typography>
+            <Typography
+              sx={{ color: "#222831", fontWeight: "bold", mb: 3, fontSize: 20 }}
+            >
+              Resumo
+            </Typography>
+            <Typography sx={{ color: "#222831" }}>
               <strong>Arquivo:</strong>{" "}
               {newEnvelope.file
                 ? newEnvelope.file.name
                 : "Nenhum arquivo selecionado"}
             </Typography>
-            <Typography>
+            <Typography sx={{ color: "#222831" }}>
               <strong>Descrição:</strong> {newEnvelope.description}
             </Typography>
-            <Typography>
+            <Typography sx={{ color: "#222831" }}>
               <strong>Repositório:</strong> {newEnvelope.repositoryName} (
               {newEnvelope.repositoryId})
             </Typography>
-            <Typography>
+            <Typography sx={{ color: "#222831" }}>
               <strong>Signatários:</strong>
             </Typography>
             <List>

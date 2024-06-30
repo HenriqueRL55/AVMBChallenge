@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useAuth } from "./../../services/auth";
+import { useAuth } from "../../services/auth";
 import { Button, TextField, Typography } from "@mui/material";
-import { RegisterContainer, FormBox } from "../login/login.styles";
+import { RegisterContainer, FormBox } from "./register.styles";
 
 export const RegisterPage = () => {
   const { signUp } = useAuth();
@@ -43,7 +43,7 @@ export const RegisterPage = () => {
           fullWidth
           onClick={handleRegister}
         >
-          Register
+          Registrar-se
         </Button>
       </FormBox>
     </RegisterContainer>

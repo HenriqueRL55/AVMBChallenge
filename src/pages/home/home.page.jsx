@@ -1,11 +1,18 @@
 import React, { useState } from "react";
-import { Container, Box, Button } from "@mui/material";
-import RepositoryCreation from "../../components/RepositoryCreation/repositoryCreation";
-import RepositoryList from "../../components/RepositoryList/repositoryList";
-import DocumentCreation from "../../components/DocumentCreation/documentCreation";
+import RepositoryCreation from "../../components/RepositoryCreation/repositoryCreation.component";
+import RepositoryList from "../../components/RepositoryList/repositoryList.component";
+import DocumentCreation from "../../components/DocumentCreation/documentCreation.component";
 import useRepositories from "../../hooks/useRepositories";
 import useDocuments from "../../hooks/useDocuments";
 import { useAuth } from "../../services/auth";
+import {
+  HomeContainer,
+  LogoutButton,
+  InsideContainer,
+  RespositoryCreate,
+  ListRepository,
+  ButtonCreate,
+} from "./home.styles";
 
 const HomePage = () => {
   const { logout } = useAuth();
@@ -49,32 +56,28 @@ const HomePage = () => {
   };
 
   return (
-    <Container>
-      <Box display="flex" justifyContent="flex-end" marginBottom={2}>
-        <Button onClick={logout} variant="contained" color="primary">
+    <HomeContainer>
+      <InsideContainer>
+        <LogoutButton onClick={logout} variant="contained">
           Sair
-        </Button>
-      </Box>
-
-      <Box display="flex" gap={2} marginBottom={2}>
-        
-        <RepositoryCreation
-          createRepository={handleCreateRepository}
-          setNewRepositoryName={setNewRepositoryName}
-        />
-        <Button variant="contained" color="primary" onClick={openModal}>
-          Criar Novo Envelope
-        </Button>
-      </Box>
-
-      {message && <p>{message}</p>}
-
-      <RepositoryList
-        repositoryList={repositoryList}
-        envelopes={envelopes}
-        handleAccordionChange={handleAccordionChange}
-      />
-
+        </LogoutButton>
+        <RespositoryCreate>
+          <RepositoryCreation
+            createRepository={handleCreateRepository}
+            setNewRepositoryName={setNewRepositoryName}
+          />
+          <ButtonCreate variant="contained" color="primary" onClick={openModal}>
+            Criar Novo Envelope
+          </ButtonCreate>
+        </RespositoryCreate>
+        <ListRepository>
+          <RepositoryList
+            repositoryList={repositoryList}
+            envelopes={envelopes}
+            handleAccordionChange={handleAccordionChange}
+          />
+        </ListRepository>
+      </InsideContainer>
       <DocumentCreation
         isModalOpen={isModalOpen}
         closeModal={closeModal}
@@ -87,7 +90,7 @@ const HomePage = () => {
         createEnvelope={createEnvelope}
         repositoryList={repositoryList}
       />
-    </Container>
+    </HomeContainer>
   );
 };
 

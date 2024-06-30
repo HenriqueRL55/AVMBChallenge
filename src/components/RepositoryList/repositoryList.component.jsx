@@ -7,8 +7,9 @@ import {
   List,
   ListItem,
   ListItemText,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+  TypographyCreation,
+  WhiteExpandMoreIcon,
+} from "./respositoryList.style";
 
 const RepositoryList = ({
   repositoryList,
@@ -41,15 +42,15 @@ const RepositoryList = ({
           key={repository.id}
           onChange={() => handleAccordionChange(repository.id)}
         >
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <AccordionSummary expandIcon={<WhiteExpandMoreIcon />}>
             <Typography>{repository.nome}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <div>
-              <Typography>
+              <TypographyCreation>
                 Data de Criação:{" "}
                 {new Date(repository.dataHoraCriacao).toLocaleString()}
-              </Typography>
+              </TypographyCreation>
               <List>
                 {envelopes[repository.id] &&
                 envelopes[repository.id].length > 0 ? (
