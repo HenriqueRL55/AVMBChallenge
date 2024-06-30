@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, List, ListItem, ListItemText, IconButton, Snackbar, Alert } from "@mui/material";
-import { Edit, Send, Delete } from "@mui/icons-material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, List, ListItem, ListItemText, IconButton, Snackbar, Alert, Button } from "@mui/material";
+import { Edit, Send, Delete, Download } from "@mui/icons-material";
 import { TypographyCreation, WhiteExpandMoreIcon } from "./respositoryList.style";
 import SignatariosModal from "../SignatariosModal/signatariosModal.component";
 import ForwardAssignModal from "../ForwardAssignModal/forwardAssignModal.component";
@@ -14,7 +14,7 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
   const [message, setMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("info");
   const [signatarios, setSignatarios] = useState([]);
-  const { encaminharEnvelopeParaAssinaturas, expurgarEnvelope, getSignatariosPorEnvelope } = useDocuments();
+  const { encaminharEnvelopeParaAssinaturas, expurgarEnvelope, getSignatariosPorEnvelope, downloadPDFEnvelope } = useDocuments();
 
   useEffect(() => {
     if (selectedEnvelope) {
@@ -108,6 +108,27 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
     setSelectedEnvelope(null);
   };
 
+  const handleDownload = async (envelope) => {
+    try {
+      const { envelopeContent, nomeArquivo, mimeType } = await downloadPDFEnvelope(envelope.hashSHA256);
+      if (envelopeContent) {
+        const link = document.createElement("a");
+        link.href = `data:${mimeType};base64,${envelopeContent}`;
+        link.download = nomeArquivo;
+        link.click();
+        setAlertSeverity("success");
+        setMessage("Download iniciado.");
+      } else {
+        setAlertSeverity("warning");
+        setMessage("Conteúdo do envelope não encontrado.");
+      }
+    } catch (error) {
+      setAlertSeverity("error");
+      setMessage("Erro ao baixar o envelope.");
+      console.error("Erro ao baixar o envelope:", error);
+    }
+  };
+
   const handleDelete = async (envelopeId, status) => {
     if (status === "2") {
       setAlertSeverity("warning");
@@ -164,6 +185,14 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
                             >
                               <Send />
                             </IconButton>
+                            {envelope.status === "3" && (
+                              <IconButton
+                                edge="end"
+                                onClick={() => handleDownload(envelope)}
+                              >
+                                <Download />
+                              </IconButton>
+                            )}
                             <IconButton
                               edge="end"
                               onClick={() =>

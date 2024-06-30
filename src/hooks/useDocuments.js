@@ -175,6 +175,24 @@ const useDocuments = () => {
     }
   };
 
+  const downloadPDFEnvelope = async (hashSHA256) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetchService("downloadPDFEnvelope", {
+        hashSHA256,
+        incluirDocs: "N",
+        versaoSemCertificado: null,
+      });
+      return response?.response;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     documentList,
     message,
@@ -192,6 +210,7 @@ const useDocuments = () => {
     expurgarEnvelope,
     consultarEnvelope,
     getSignatariosPorEnvelope,
+    downloadPDFEnvelope,
   };
 };
 
