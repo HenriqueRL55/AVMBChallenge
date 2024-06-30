@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Container, Box, Button } from "@mui/material";
 import RepositoryCreation from "../../components/RepositoryCreation/repositoryCreation.component";
 import RepositoryList from "../../components/RepositoryList/repositoryList.component";
 import DocumentCreation from "../../components/DocumentCreation/documentCreation.component";
@@ -55,6 +56,13 @@ const HomePage = () => {
     setActiveTab(newValue);
   };
 
+  const removeSignatory = (index) => {
+    const updatedSignatories = newEnvelope.signatories.filter(
+      (_, i) => i !== index
+    );
+    updateNewEnvelope("signatories", updatedSignatories);
+  };
+
   return (
     <HomeContainer>
       <InsideContainer>
@@ -87,6 +95,7 @@ const HomePage = () => {
         updateNewEnvelope={updateNewEnvelope}
         addSignatory={addSignatory}
         updateSignatory={updateSignatory}
+        removeSignatory={removeSignatory}
         createEnvelope={createEnvelope}
         repositoryList={repositoryList}
       />

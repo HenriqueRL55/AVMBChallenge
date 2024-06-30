@@ -11,7 +11,9 @@ import {
   ListItem,
   ListItemText,
   Autocomplete,
+  IconButton,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const DocumentCreation = ({
   isModalOpen,
@@ -22,6 +24,7 @@ const DocumentCreation = ({
   updateNewEnvelope,
   addSignatory,
   updateSignatory,
+  removeSignatory,
   createEnvelope,
   repositoryList,
 }) => {
@@ -47,11 +50,11 @@ const DocumentCreation = ({
           value={activeTab}
           onChange={handleTabChange}
           aria-label="envelope creation tabs"
-          TabIndicatorProps={{ style: { display: "none" } }} // Removes the indicator
+          TabIndicatorProps={{ style: { display: "none" } }} 
           sx={{
             "& .MuiTab-root": {
               "&:focus": {
-                outline: "none", // Removes the focus outline
+                outline: "none", 
               },
             },
           }}
@@ -116,7 +119,13 @@ const DocumentCreation = ({
               Signatários
             </Typography>
             {newEnvelope.signatories.map((signatory, index) => (
-              <Box key={index} display="flex" gap={2} mb={2}>
+              <Box
+                key={index}
+                display="flex"
+                alignItems="center"
+                gap={2}
+                mb={2}
+              >
                 <TextField
                   label="Nome"
                   variant="outlined"
@@ -137,6 +146,12 @@ const DocumentCreation = ({
                     updateSignatory(index, "email", e.target.value)
                   }
                 />
+                <IconButton
+                  color="secondary"
+                  onClick={() => removeSignatory(index)}
+                >
+                  <DeleteIcon sx={{ color: "#1976d2" }} />
+                </IconButton>
               </Box>
             ))}
             <Button variant="contained" onClick={addSignatory}>
@@ -171,6 +186,12 @@ const DocumentCreation = ({
               {newEnvelope.signatories.map((signatory, index) => (
                 <ListItem key={index}>
                   <ListItemText
+                    sx={{
+                      color: "#222831",
+                      fontWeight: "bold",
+                      mb: 3,
+                      fontSize: 20,
+                    }}
                     primary={signatory.name}
                     secondary={signatory.email}
                   />
