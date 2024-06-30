@@ -1,8 +1,8 @@
 import React from "react";
 import { Modal, Box, Button, Typography as MuiTypography } from "@mui/material";
-import { Typography } from "./forwardAssignModal.styles";
+import { Typography } from "./documentDeleteModal.styles";
 
-const ForwardAssignModal = ({ open, onClose, onConfirm }) => {
+const DeleteConfirmModal = ({ open, onClose, onConfirm }) => {
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -14,9 +14,9 @@ const ForwardAssignModal = ({ open, onClose, onConfirm }) => {
           mt: 10,
         }}
       >
-        <Typography variant="h6">Encaminhar Envelope</Typography>
+        <Typography variant="h6">Excluir Envelope</Typography>
         <Typography>
-          Deseja mesmo encaminhar este envelope para assinatura?
+          Deseja mesmo excluir este envelope? Esta ação não pode ser desfeita.
         </Typography>
         <Box mt={2} display="flex" justifyContent="space-between">
           <Button onClick={onClose} variant="contained" color="primary">
@@ -31,4 +31,4 @@ const ForwardAssignModal = ({ open, onClose, onConfirm }) => {
   );
 };
 
-export default ForwardAssignModal;
+export default DeleteConfirmModal;

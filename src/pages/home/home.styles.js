@@ -5,7 +5,6 @@ export const HomeContainer = styled(Container)`
   background-color: #fff;
   border-radius: 6px;
   height: 100vh;
-  
   overflow: auto;
   min-width: 50vw;
   display: flex;
@@ -23,12 +22,26 @@ export const InsideContainer = styled(Box)`
     "list";
   gap: 1rem;
   width: 100%;
+
+  @media (max-width: 780px) {
+    grid-template-areas:
+      "logout"
+      "repository"
+      "list";
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
 `;
 
 export const RespositoryCreate = styled(Box)`
   display: flex;
   justify-content: space-between;
   width: 100%;
+
+  @media (max-width: 780px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
 export const ListRepository = styled(Box)`
@@ -58,5 +71,10 @@ export const ButtonCreate = styled(MuiButton)`
   color: white;
   &:hover {
     background-color: #4e555e;
+  }
+
+  @media (max-width: 780px) {
+    width: 100%;
+    margin-top: 1rem;
   }
 `;

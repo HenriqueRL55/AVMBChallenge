@@ -133,6 +133,20 @@ const useDocuments = () => {
     }
   };
 
+  const expurgarEnvelope = async (idEnvelope) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetchService("expurgarEnvelope", { idEnvelope });
+      return response;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     documentList,
     message,
@@ -147,6 +161,7 @@ const useDocuments = () => {
     updateSignatory,
     createEnvelope,
     encaminharEnvelopeParaAssinaturas,
+    expurgarEnvelope,
   };
 };
 

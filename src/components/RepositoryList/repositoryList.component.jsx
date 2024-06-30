@@ -11,13 +11,14 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { Edit, Send } from "@mui/icons-material";
+import { Edit, Send, Delete } from "@mui/icons-material";
 import {
   TypographyCreation,
   WhiteExpandMoreIcon,
 } from "./respositoryList.style";
 import SignatariosModal from "../SignatariosModal/signatariosModal.component";
 import ForwardAssignModal from "../ForwardAssignModal/forwardAssignModal.component";
+import DeleteConfirmModal from "../DocumentDelete/documentDeleteModal.component";
 import useDocuments from "../../hooks/useDocuments";
 
 const RepositoryList = ({
@@ -30,8 +31,10 @@ const RepositoryList = ({
   const [isSignatariosModalOpen, setIsSignatariosModalOpen] = useState(false);
   const [isForwardAssignModalOpen, setIsForwardAssignModalOpen] =
     useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
+    useState(false);
   const [message, setMessage] = useState("");
-  const { encaminharEnvelopeParaAssinaturas } = useDocuments();
+  const { encaminharEnvelopeParaAssinaturas, expurgarEnvelope } = useDocuments();
 
   const getStatusDescription = (status) => {
     switch (status) {
@@ -83,6 +86,20 @@ const RepositoryList = ({
     setSelectedEnvelope(null);
   };
 
+  const openDeleteConfirmModal = (envelope) => {
+    if (envelope.status === "2") {
+      setMessage("Não é possível excluir um envelope que está aguardando assinatura.");
+      return;
+    }
+    setSelectedEnvelope(envelope.id);
+    setIsDeleteConfirmModalOpen(true);
+  };
+
+  const closeDeleteConfirmModal = () => {
+    setIsDeleteConfirmModalOpen(false);
+    setSelectedEnvelope(null);
+  };
+
   const handleConfirm = async () => {
     try {
       await encaminharEnvelopeParaAssinaturas(selectedEnvelope);
@@ -92,6 +109,18 @@ const RepositoryList = ({
       console.error("Erro ao encaminhar envelope para assinaturas:", error);
     } finally {
       closeForwardAssignModal();
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await expurgarEnvelope(selectedEnvelope);
+      setMessage("Envelope excluído com sucesso!");
+    } catch (error) {
+      setMessage("Erro ao excluir envelope.");
+      console.error("Erro ao excluir envelope:", error);
+    } finally {
+      closeDeleteConfirmModal();
     }
   };
 
@@ -134,6 +163,12 @@ const RepositoryList = ({
                             >
                               <Send />
                             </IconButton>
+                            <IconButton
+                              edge="end"
+                              onClick={() => openDeleteConfirmModal(envelope)}
+                            >
+                              <Delete />
+                            </IconButton>
                           </>
                         }
                       >
@@ -167,6 +202,11 @@ const RepositoryList = ({
         open={isForwardAssignModalOpen}
         onClose={closeForwardAssignModal}
         onConfirm={handleConfirm}
+      />
+      <DeleteConfirmModal
+        open={isDeleteConfirmModalOpen}
+        onClose={closeDeleteConfirmModal}
+        onConfirm={handleDelete}
       />
       {message && (
         <Snackbar
