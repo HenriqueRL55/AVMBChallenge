@@ -10,7 +10,6 @@ exports.webhook = functions.https.onRequest((req, res) => {
   }
 
   const webhookEvent = req.body;
-  console.log('Webhook received:', webhookEvent);
 
   if (!webhookEvent || !webhookEvent.tokenAPI || webhookEvent.tokenAPI !== token) {
     return res.status(403).send('Forbidden');
@@ -31,7 +30,6 @@ exports.webhook = functions.https.onRequest((req, res) => {
 
   admin.firestore().collection('webhooks').doc(envelopeId.toString()).set(envelopeData, { merge: true })
     .then(() => {
-      console.log('Webhook data saved:', envelopeData);
       return res.status(200).send('Webhook received');
     })
     .catch(error => {

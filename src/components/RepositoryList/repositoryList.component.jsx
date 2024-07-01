@@ -1,26 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
   Snackbar,
   Alert,
-  Button,
-} from "@mui/material";
-import { Edit, Send, Delete, Download, ExpandMore } from "@mui/icons-material";
-import {
-  TypographyCreation,
-  WhiteExpandMoreIcon,
-} from "./respositoryList.style";
-import SignatariosModal from "../SignatariosModal/signatariosModal.component";
-import ForwardAssignModal from "../ForwardAssignModal/forwardAssignModal.component";
-import DeleteConfirmModal from "../DocumentDelete/documentDeleteModal.component";
-import useDocuments from "../../hooks/useDocuments";
+} from '@mui/material';
+import RepositoryAccordion from '../RepositoryAccordion/repositoryAccordion.component';
+import SignatariosModal from '../SignatariosModal/signatariosModal.component';
+import ForwardAssignModal from '../ForwardAssignModal/forwardAssignModal.component';
+import DeleteConfirmModal from '../DocumentDelete/documentDeleteModal.component';
+import useDocuments from '../../hooks/useDocuments';
 
 const RepositoryList = ({
   repositoryList,
@@ -31,12 +18,10 @@ const RepositoryList = ({
   const [expanded, setExpanded] = useState(false);
   const [selectedEnvelope, setSelectedEnvelope] = useState(null);
   const [isSignatariosModalOpen, setIsSignatariosModalOpen] = useState(false);
-  const [isForwardAssignModalOpen, setIsForwardAssignModalOpen] =
-    useState(false);
-  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
-    useState(false);
-  const [message, setMessage] = useState("");
-  const [alertSeverity, setAlertSeverity] = useState("info");
+  const [isForwardAssignModalOpen, setIsForwardAssignModalOpen] = useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState('info');
   const [signatarios, setSignatarios] = useState([]);
   const {
     encaminharEnvelopeParaAssinaturas,
@@ -56,26 +41,26 @@ const RepositoryList = ({
       const response = await getSignatariosPorEnvelope(envelopeId);
       setSignatarios(response || []);
     } catch (error) {
-      console.error("Erro ao buscar signatários:", error);
+      console.error('Erro ao buscar signatários:', error);
     }
   };
 
   const getStatusDescription = (status) => {
     switch (status) {
-      case "1":
-        return "Em construção";
-      case "2":
-        return "Aguardando Assinaturas";
-      case "3":
-        return "Concluído";
-      case "4":
-        return "Arquivado";
-      case "5":
-        return "Cancelado";
-      case "6":
-        return "Expirado";
+      case '1':
+        return 'Em construção';
+      case '2':
+        return 'Aguardando Assinaturas';
+      case '3':
+        return 'Concluído';
+      case '4':
+        return 'Arquivado';
+      case '5':
+        return 'Cancelado';
+      case '6':
+        return 'Expirado';
       default:
-        return "Desconhecido";
+        return 'Desconhecido';
     }
   };
 
@@ -99,20 +84,18 @@ const RepositoryList = ({
 
   const handleConfirm = async () => {
     if (!signatarios || signatarios.length === 0) {
-      setAlertSeverity("warning");
-      setMessage(
-        "Não foi possível enviar pois não há signatários vinculados a esse envelope."
-      );
+      setAlertSeverity('warning');
+      setMessage('Não foi possível enviar pois não há signatários vinculados a esse envelope.');
       return true;
     }
     try {
       await encaminharEnvelopeParaAssinaturas(selectedEnvelope);
-      setAlertSeverity("success");
-      setMessage("Envelope encaminhado para assinatura com sucesso!");
+      setAlertSeverity('success');
+      setMessage('Envelope encaminhado para assinatura com sucesso!');
     } catch (error) {
-      setAlertSeverity("error");
-      setMessage("Erro ao encaminhar envelope para assinatura.");
-      console.error("Erro ao encaminhar envelope para assinaturas:", error);
+      setAlertSeverity('error');
+      setMessage('Erro ao encaminhar envelope para assinatura.');
+      console.error('Erro ao encaminhar envelope para assinaturas:', error);
     } finally {
       closeForwardAssignModal();
     }
@@ -120,17 +103,15 @@ const RepositoryList = ({
   };
 
   const openForwardAssignModal = async (envelope) => {
-    if (envelope.status !== "1") {
-      setAlertSeverity("warning");
-      setMessage("Esse envelope já foi encaminhado para assinatura.");
+    if (envelope.status !== '1') {
+      setAlertSeverity('warning');
+      setMessage('Esse envelope já foi encaminhado para assinatura.');
       return;
     }
     await fetchSignatarios(envelope.id);
     if (!signatarios || signatarios.length === 0) {
-      setAlertSeverity("warning");
-      setMessage(
-        "Não foi possível enviar pois não há signatários vinculados a esse envelope."
-      );
+      setAlertSeverity('warning');
+      setMessage('Não foi possível enviar pois não há signatários vinculados a esse envelope.');
       return;
     }
     setSelectedEnvelope(envelope.id);
@@ -144,30 +125,29 @@ const RepositoryList = ({
 
   const handleDownload = async (envelope) => {
     try {
-      const { envelopeContent, nomeArquivo, mimeType } =
-        await downloadPDFEnvelope(envelope.hashSHA256);
+      const { envelopeContent, nomeArquivo, mimeType } = await downloadPDFEnvelope(envelope.hashSHA256);
       if (envelopeContent) {
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         link.href = `data:${mimeType};base64,${envelopeContent}`;
         link.download = nomeArquivo;
         link.click();
-        setAlertSeverity("success");
-        setMessage("Download iniciado.");
+        setAlertSeverity('success');
+        setMessage('Download iniciado.');
       } else {
-        setAlertSeverity("warning");
-        setMessage("Conteúdo do envelope não encontrado.");
+        setAlertSeverity('warning');
+        setMessage('Conteúdo do envelope não encontrado.');
       }
     } catch (error) {
-      setAlertSeverity("error");
-      setMessage("Erro ao baixar o envelope.");
-      console.error("Erro ao baixar o envelope:", error);
+      setAlertSeverity('error');
+      setMessage('Erro ao baixar o envelope.');
+      console.error('Erro ao baixar o envelope:', error);
     }
   };
 
   const handleDelete = async (envelopeId, status) => {
-    if (status === "2") {
-      setAlertSeverity("warning");
-      setMessage("Não é possível excluir um envelope aguardando assinatura.");
+    if (status === '2') {
+      setAlertSeverity('warning');
+      setMessage('Não é possível excluir um envelope aguardando assinatura.');
       return;
     }
     setSelectedEnvelope(envelopeId);
@@ -177,12 +157,12 @@ const RepositoryList = ({
   const confirmDelete = async () => {
     try {
       await expurgarEnvelope(selectedEnvelope);
-      setAlertSeverity("success");
-      setMessage("Envelope excluído com sucesso!");
+      setAlertSeverity('success');
+      setMessage('Envelope excluído com sucesso!');
     } catch (error) {
-      setAlertSeverity("error");
-      setMessage("Erro ao excluir envelope.");
-      console.error("Erro ao excluir envelope:", error);
+      setAlertSeverity('error');
+      setMessage('Erro ao excluir envelope.');
+      console.error('Erro ao excluir envelope:', error);
     } finally {
       setIsDeleteConfirmModalOpen(false);
       setSelectedEnvelope(null);
@@ -197,83 +177,19 @@ const RepositoryList = ({
   return (
     <>
       {repositoryList.map((repository) => (
-        <Accordion
+        <RepositoryAccordion
           key={repository.id}
-          expanded={expanded === repository.id}
-          onChange={handleChange(repository.id)}
-        >
-          <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography>{repository.nome}</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div>
-              <TypographyCreation>
-                Data de Criação:{" "}
-                {new Date(repository.dataHoraCriacao).toLocaleString()}
-              </TypographyCreation>
-              {loadingEnvelopes[repository.id] ? (
-                <TypographyCreation>Carregando envelopes...</TypographyCreation>
-              ) : (
-                <List>
-                  {envelopes[repository.id] &&
-                  envelopes[repository.id].length > 0 ? (
-                    envelopes[repository.id].map((envelope) => (
-                      <ListItem
-                        key={envelope.id}
-                        secondaryAction={
-                          <>
-                            <IconButton
-                              edge="end"
-                              onClick={() => openSignatariosModal(envelope.id)}
-                            >
-                              <Edit />
-                            </IconButton>
-                            <IconButton
-                              edge="end"
-                              onClick={() => openForwardAssignModal(envelope)}
-                            >
-                              <Send />
-                            </IconButton>
-                            {envelope.status === "3" && (
-                              <IconButton
-                                edge="end"
-                                onClick={() => handleDownload(envelope)}
-                              >
-                                <Download />
-                              </IconButton>
-                            )}
-                            <IconButton
-                              edge="end"
-                              onClick={() =>
-                                handleDelete(envelope.id, envelope.status)
-                              }
-                            >
-                              <Delete />
-                            </IconButton>
-                          </>
-                        }
-                      >
-                        <ListItemText
-                          sx={{ marginRight: 2, paddingRight: 2 }}
-                          primary={envelope.descricao}
-                          secondary={`Status: ${getStatusDescription(
-                            envelope.status
-                          )} | Criado em: ${new Date(
-                            envelope.dataHoraCriacao
-                          ).toLocaleString()}`}
-                        />
-                      </ListItem>
-                    ))
-                  ) : (
-                    <ListItem>
-                      <ListItemText primary="Nenhum envelope encontrado neste repositório." />
-                    </ListItem>
-                  )}
-                </List>
-              )}
-            </div>
-          </AccordionDetails>
-        </Accordion>
+          repository={repository}
+          expanded={expanded}
+          loadingEnvelopes={loadingEnvelopes}
+          envelopes={envelopes}
+          handleChange={handleChange}
+          openSignatariosModal={openSignatariosModal}
+          openForwardAssignModal={openForwardAssignModal}
+          handleDownload={handleDownload}
+          handleDelete={handleDelete}
+          getStatusDescription={getStatusDescription}
+        />
       ))}
       <SignatariosModal
         open={isSignatariosModalOpen}
@@ -294,7 +210,7 @@ const RepositoryList = ({
         <Snackbar
           open={Boolean(message)}
           autoHideDuration={5000}
-          onClose={() => setMessage("")}
+          onClose={() => setMessage('')}
         >
           <Alert severity={alertSeverity}>{message}</Alert>
         </Snackbar>
