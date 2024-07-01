@@ -96,10 +96,10 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
       for (const signatario of newSignatarios) {
         await inserirSignatarioEnvelope({
           Envelope: { id: envelopeId },
-          ordem: signatarios.length + 1, // Ajustar conforme necessário
+          ordem: signatarios.length + 1,
           ConfigAssinatura: {
             ...signatario,
-            tipoAssinatura: 1, // Ajustar conforme necessário
+            tipoAssinatura: 1,
             permitirDelegar: "N",
             apenasCelular: "N",
             exigirLogin: "N",
@@ -137,11 +137,13 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
     <Modal open={open} onClose={onClose}>
       <Box
         sx={{
-          width: 400,
-          p: 4,
+          width: { xs: "90%", sm: "80%", md: "60%", lg: "50%" },
+          p: { xs: 2, sm: 3, md: 4 },
           bgcolor: "background.paper",
           m: "auto",
-          mt: 10,
+          mt: { xs: "20%", sm: "15%", md: "10%", lg: "5%" },
+          borderRadius: 2,
+          boxShadow: 24,
         }}
       >
         <Typography variant="h6">Signatários</Typography>

@@ -61,8 +61,6 @@ const DocumentCreation = ({
       setErrorMessages(errors);
       return;
     }
-
-    // Chama a função de criação do envelope
     createEnvelope();
   };
 
@@ -74,22 +72,23 @@ const DocumentCreation = ({
     <Modal open={isModalOpen} onClose={closeModal}>
       <Box
         sx={{
-          width: "40%",
+          width: { xs: "90%", sm: "70%", md: "50%", lg: "40%" },
           border: "1px solid #1976d2",
           bgcolor: "background.paper",
-          maxHeight: "50%",
+          maxHeight: "80%",
           overflow: "auto",
           borderRadius: 2,
-          p: 4,
+          p: { xs: 2, sm: 3, md: 4 },
           margin: "auto",
-          marginTop: "5%",
+          marginTop: { xs: "10%", sm: "8%", md: "6%", lg: "5%" },
         }}
       >
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
           aria-label="envelope creation tabs"
-          TabIndicatorProps={{ style: { display: "none" } }}
+          variant="scrollable"
+          scrollButtons="auto"
           sx={{
             "& .MuiTab-root": {
               "&:focus": {

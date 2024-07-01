@@ -7,11 +7,13 @@ const DeleteConfirmModal = ({ open, onClose, onConfirm }) => {
     <Modal open={open} onClose={onClose}>
       <Box
         sx={{
-          width: 400,
-          p: 4,
+          width: { xs: "90%", sm: "80%", md: "60%", lg: "40%" },
+          p: { xs: 2, sm: 3, md: 4 },
           bgcolor: "background.paper",
           m: "auto",
-          mt: 10,
+          mt: { xs: "20%", sm: "15%", md: "10%", lg: "5%" },
+          borderRadius: 2,
+          boxShadow: 24,
         }}
       >
         <Typography variant="h6">Excluir Envelope</Typography>

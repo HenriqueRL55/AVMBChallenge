@@ -12,13 +12,14 @@ import {
   Alert,
   Button,
 } from "@mui/material";
-import { Edit, Send, Delete, Download, ExpandMore, Margin } from "@mui/icons-material";
+import { Edit, Send, Delete, Download, ExpandMore } from "@mui/icons-material";
 import {
   TypographyCreation,
   WhiteExpandMoreIcon,
 } from "./respositoryList.style";
 import SignatariosModal from "../SignatariosModal/signatariosModal.component";
 import ForwardAssignModal from "../ForwardAssignModal/forwardAssignModal.component";
+import DeleteConfirmModal from "../DocumentDelete/documentDeleteModal.component";
 import useDocuments from "../../hooks/useDocuments";
 
 const RepositoryList = ({
@@ -31,6 +32,8 @@ const RepositoryList = ({
   const [selectedEnvelope, setSelectedEnvelope] = useState(null);
   const [isSignatariosModalOpen, setIsSignatariosModalOpen] = useState(false);
   const [isForwardAssignModalOpen, setIsForwardAssignModalOpen] =
+    useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
     useState(false);
   const [message, setMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("info");
@@ -167,15 +170,28 @@ const RepositoryList = ({
       setMessage("Não é possível excluir um envelope aguardando assinatura.");
       return;
     }
+    setSelectedEnvelope(envelopeId);
+    setIsDeleteConfirmModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      await expurgarEnvelope(envelopeId);
+      await expurgarEnvelope(selectedEnvelope);
       setAlertSeverity("success");
       setMessage("Envelope excluído com sucesso!");
     } catch (error) {
       setAlertSeverity("error");
       setMessage("Erro ao excluir envelope.");
       console.error("Erro ao excluir envelope:", error);
+    } finally {
+      setIsDeleteConfirmModalOpen(false);
+      setSelectedEnvelope(null);
     }
+  };
+
+  const closeDeleteConfirmModal = () => {
+    setIsDeleteConfirmModalOpen(false);
+    setSelectedEnvelope(null);
   };
 
   return (
@@ -232,54 +248,59 @@ const RepositoryList = ({
                                 handleDelete(envelope.id, envelope.status)
                               }
                             >
-                                <Delete />
-                              </IconButton>
-                            </>
-                          }
-                        >
-                          <ListItemText
-                           sx={{ marginRight: 2, paddingRight: 2 }}
-                            primary={envelope.descricao}
-                            secondary={`Status: ${getStatusDescription(
-                              envelope.status
-                            )} | Criado em: ${new Date(
-                              envelope.dataHoraCriacao
-                            ).toLocaleString()}`}
-                          />
-                        </ListItem>
-                      ))
-                    ) : (
-                      <ListItem>
-                        <ListItemText primary="Nenhum envelope encontrado neste repositório." />
+                              <Delete />
+                            </IconButton>
+                          </>
+                        }
+                      >
+                        <ListItemText
+                          sx={{ marginRight: 2, paddingRight: 2 }}
+                          primary={envelope.descricao}
+                          secondary={`Status: ${getStatusDescription(
+                            envelope.status
+                          )} | Criado em: ${new Date(
+                            envelope.dataHoraCriacao
+                          ).toLocaleString()}`}
+                        />
                       </ListItem>
-                    )}
-                  </List>
-                )}
-              </div>
-            </AccordionDetails>
-          </Accordion>
-        ))}
-        <SignatariosModal
-          open={isSignatariosModalOpen}
-          onClose={closeSignatariosModal}
-          envelopeId={selectedEnvelope}
-        />
-        <ForwardAssignModal
-          open={isForwardAssignModalOpen}
-          onClose={closeForwardAssignModal}
-          onConfirm={handleConfirm}
-        />
-        {message && (
-          <Snackbar
-            open={Boolean(message)}
-            autoHideDuration={5000}
-            onClose={() => setMessage("")}
-          >
-            <Alert severity={alertSeverity}>{message}</Alert>
-          </Snackbar>
-        )}
-      </>
-    );
+                    ))
+                  ) : (
+                    <ListItem>
+                      <ListItemText primary="Nenhum envelope encontrado neste repositório." />
+                    </ListItem>
+                  )}
+                </List>
+              )}
+            </div>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+      <SignatariosModal
+        open={isSignatariosModalOpen}
+        onClose={closeSignatariosModal}
+        envelopeId={selectedEnvelope}
+      />
+      <ForwardAssignModal
+        open={isForwardAssignModalOpen}
+        onClose={closeForwardAssignModal}
+        onConfirm={handleConfirm}
+      />
+      <DeleteConfirmModal
+        open={isDeleteConfirmModalOpen}
+        onClose={closeDeleteConfirmModal}
+        onConfirm={confirmDelete}
+      />
+      {message && (
+        <Snackbar
+          open={Boolean(message)}
+          autoHideDuration={5000}
+          onClose={() => setMessage("")}
+        >
+          <Alert severity={alertSeverity}>{message}</Alert>
+        </Snackbar>
+      )}
+    </>
+  );
 };
 
 export default RepositoryList;
