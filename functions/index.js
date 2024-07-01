@@ -22,7 +22,11 @@ exports.webhook = functions.https.onRequest((req, res) => {
     status: webhookEvent.envelope.status,
     dataHoraCriacao: webhookEvent.envelope.dataHoraCriacao,
     dataHoraConclusao: webhookEvent.envelope.dataHoraConclusao,
-    conteudo: webhookEvent.envelope.conteudo,  
+    dataHoraAlteracao: webhookEvent.envelope.dataHoraAlteracao,
+    dataHoraCancelamento: webhookEvent.envelope.dataHoraCancelamento,
+    hashSHA256: webhookEvent.envelope.hashSHA256,
+    hashSHA512: webhookEvent.envelope.hashSHA512,
+    listaSignatarios: webhookEvent.envelope.listaSignatarios,
   };
 
   admin.firestore().collection('webhooks').doc(envelopeId.toString()).set(envelopeData, { merge: true })

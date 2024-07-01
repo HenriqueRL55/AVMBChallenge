@@ -26,6 +26,7 @@ export const AccordionDetails = styled(MuiAccordionDetails)`
   background-color: #fff !important;
   border: 1px solid #222831;
   color: #222831;
+  
 `;
 
 export const Typography = styled(MuiTypography)`
@@ -46,6 +47,7 @@ export const ListItem = styled(MuiListItem)`
 
 export const ListItemText = styled(MuiListItemText)`
   color: #222831;
+  margin-right: 20rem;
 `;
 
 export const WhiteExpandMoreIcon = styled(ExpandMoreIcon)`

@@ -1,19 +1,19 @@
 import React from "react";
-import { Box, TextField, Button } from "@mui/material";
+import { CreateButton, FormContainer, Input } from "./documentQuery.styles";
 
 const DocumentQuery = ({ setSearchTerm, handleSearch }) => {
   return (
-    <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-      <TextField
+    <FormContainer>
+      <Input
         label="Nome ou ID do Documento"
         variant="outlined"
         onChange={(e) => setSearchTerm(e.target.value)}
         fullWidth
       />
-      <Button variant="contained" color="primary" onClick={handleSearch}>
+      <CreateButton variant="contained" onClick={handleSearch}>
         Consultar
-      </Button>
-    </Box>
+      </CreateButton>
+    </FormContainer>
   );
 };
 

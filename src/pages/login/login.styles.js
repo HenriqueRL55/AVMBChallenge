@@ -27,7 +27,7 @@ export const FormBox = styled(Box)`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 15%;
+  width: 12rem;
   margin: 0 auto;
   padding: 2rem;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);

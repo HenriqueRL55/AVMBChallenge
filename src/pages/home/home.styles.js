@@ -22,25 +22,19 @@ export const InsideContainer = styled(Box)`
     "list";
   gap: 1rem;
   width: 100%;
-
-  @media (max-width: 780px) {
-    grid-template-areas:
-      "logout"
-      "repository"
-      "list";
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-  }
+ 
 `;
 
 export const RespositoryCreate = styled(Box)`
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   width: 100%;
-
-  @media (max-width: 780px) {
+  @media (max-width: 1120px) {
     flex-direction: column;
-    align-items: stretch;
+    gap: 1rem;
+    width: 95%;
+    margin: 0 auto;
   }
 `;
 
@@ -66,14 +60,13 @@ export const ButtonCreate = styled(MuiButton)`
   align-self: end;
   width: 18rem;
   height: 2rem;
-  grid-area: logout;
   background-color: #393e46;
   color: white;
   &:hover {
     background-color: #4e555e;
   }
 
-  @media (max-width: 780px) {
+  @media (max-width: 1120px) {
     width: 100%;
     margin-top: 1rem;
   }

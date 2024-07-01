@@ -1,20 +1,46 @@
 import React, { useState, useEffect } from "react";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, List, ListItem, ListItemText, IconButton, Snackbar, Alert, Button } from "@mui/material";
-import { Edit, Send, Delete, Download } from "@mui/icons-material";
-import { TypographyCreation, WhiteExpandMoreIcon } from "./respositoryList.style";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+  Snackbar,
+  Alert,
+  Button,
+} from "@mui/material";
+import { Edit, Send, Delete, Download, ExpandMore, Margin } from "@mui/icons-material";
+import {
+  TypographyCreation,
+  WhiteExpandMoreIcon,
+} from "./respositoryList.style";
 import SignatariosModal from "../SignatariosModal/signatariosModal.component";
 import ForwardAssignModal from "../ForwardAssignModal/forwardAssignModal.component";
 import useDocuments from "../../hooks/useDocuments";
 
-const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) => {
+const RepositoryList = ({
+  repositoryList,
+  envelopes,
+  handleAccordionChange,
+}) => {
   const [loadingEnvelopes, setLoadingEnvelopes] = useState({});
+  const [expanded, setExpanded] = useState(false);
   const [selectedEnvelope, setSelectedEnvelope] = useState(null);
   const [isSignatariosModalOpen, setIsSignatariosModalOpen] = useState(false);
-  const [isForwardAssignModalOpen, setIsForwardAssignModalOpen] = useState(false);
+  const [isForwardAssignModalOpen, setIsForwardAssignModalOpen] =
+    useState(false);
   const [message, setMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("info");
   const [signatarios, setSignatarios] = useState([]);
-  const { encaminharEnvelopeParaAssinaturas, expurgarEnvelope, getSignatariosPorEnvelope, downloadPDFEnvelope } = useDocuments();
+  const {
+    encaminharEnvelopeParaAssinaturas,
+    expurgarEnvelope,
+    getSignatariosPorEnvelope,
+    downloadPDFEnvelope,
+  } = useDocuments();
 
   useEffect(() => {
     if (selectedEnvelope) {
@@ -50,7 +76,8 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
     }
   };
 
-  const handleAccordionChangeWrapper = (repositoryId) => {
+  const handleChange = (repositoryId) => (event, isExpanded) => {
+    setExpanded(isExpanded ? repositoryId : false);
     setLoadingEnvelopes((prev) => ({ ...prev, [repositoryId]: true }));
     handleAccordionChange(repositoryId).finally(() => {
       setLoadingEnvelopes((prev) => ({ ...prev, [repositoryId]: false }));
@@ -70,7 +97,9 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
   const handleConfirm = async () => {
     if (!signatarios || signatarios.length === 0) {
       setAlertSeverity("warning");
-      setMessage("Não foi possível enviar pois não há signatários vinculados a esse envelope.");
+      setMessage(
+        "Não foi possível enviar pois não há signatários vinculados a esse envelope."
+      );
       return true;
     }
     try {
@@ -96,7 +125,9 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
     await fetchSignatarios(envelope.id);
     if (!signatarios || signatarios.length === 0) {
       setAlertSeverity("warning");
-      setMessage("Não foi possível enviar pois não há signatários vinculados a esse envelope.");
+      setMessage(
+        "Não foi possível enviar pois não há signatários vinculados a esse envelope."
+      );
       return;
     }
     setSelectedEnvelope(envelope.id);
@@ -110,7 +141,8 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
 
   const handleDownload = async (envelope) => {
     try {
-      const { envelopeContent, nomeArquivo, mimeType } = await downloadPDFEnvelope(envelope.hashSHA256);
+      const { envelopeContent, nomeArquivo, mimeType } =
+        await downloadPDFEnvelope(envelope.hashSHA256);
       if (envelopeContent) {
         const link = document.createElement("a");
         link.href = `data:${mimeType};base64,${envelopeContent}`;
@@ -151,9 +183,10 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
       {repositoryList.map((repository) => (
         <Accordion
           key={repository.id}
-          onChange={() => handleAccordionChangeWrapper(repository.id)}
+          expanded={expanded === repository.id}
+          onChange={handleChange(repository.id)}
         >
-          <AccordionSummary expandIcon={<WhiteExpandMoreIcon />}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
             <Typography>{repository.nome}</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -199,53 +232,54 @@ const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) =>
                                 handleDelete(envelope.id, envelope.status)
                               }
                             >
-                              <Delete />
-                            </IconButton>
-                          </>
-                        }
-                      >
-                        <ListItemText
-                          primary={envelope.descricao}
-                          secondary={`Status: ${getStatusDescription(
-                            envelope.status
-                          )} | Criado em: ${new Date(
-                            envelope.dataHoraCriacao
-                          ).toLocaleString()}`}
-                        />
+                                <Delete />
+                              </IconButton>
+                            </>
+                          }
+                        >
+                          <ListItemText
+                           sx={{ marginRight: 2, paddingRight: 2 }}
+                            primary={envelope.descricao}
+                            secondary={`Status: ${getStatusDescription(
+                              envelope.status
+                            )} | Criado em: ${new Date(
+                              envelope.dataHoraCriacao
+                            ).toLocaleString()}`}
+                          />
+                        </ListItem>
+                      ))
+                    ) : (
+                      <ListItem>
+                        <ListItemText primary="Nenhum envelope encontrado neste repositório." />
                       </ListItem>
-                    ))
-                  ) : (
-                    <ListItem>
-                      <ListItemText primary="Nenhum envelope encontrado neste repositório." />
-                    </ListItem>
-                  )}
-                </List>
-              )}
-            </div>
-          </AccordionDetails>
-        </Accordion>
-      ))}
-      <SignatariosModal
-        open={isSignatariosModalOpen}
-        onClose={closeSignatariosModal}
-        envelopeId={selectedEnvelope}
-      />
-      <ForwardAssignModal
-        open={isForwardAssignModalOpen}
-        onClose={closeForwardAssignModal}
-        onConfirm={handleConfirm}
-      />
-      {message && (
-        <Snackbar
-          open={Boolean(message)}
-          autoHideDuration={5000}
-          onClose={() => setMessage("")}
-        >
-          <Alert severity={alertSeverity}>{message}</Alert>
-        </Snackbar>
-      )}
-    </>
-  );
+                    )}
+                  </List>
+                )}
+              </div>
+            </AccordionDetails>
+          </Accordion>
+        ))}
+        <SignatariosModal
+          open={isSignatariosModalOpen}
+          onClose={closeSignatariosModal}
+          envelopeId={selectedEnvelope}
+        />
+        <ForwardAssignModal
+          open={isForwardAssignModalOpen}
+          onClose={closeForwardAssignModal}
+          onConfirm={handleConfirm}
+        />
+        {message && (
+          <Snackbar
+            open={Boolean(message)}
+            autoHideDuration={5000}
+            onClose={() => setMessage("")}
+          >
+            <Alert severity={alertSeverity}>{message}</Alert>
+          </Snackbar>
+        )}
+      </>
+    );
 };
 
 export default RepositoryList;
