@@ -1,5 +1,5 @@
 // React Hooks
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 // Componentes Customizados
 import RepositoryCreation from "../../components/RepositoryCreation/repositoryCreation.component";
 import RepositoryList from "../../components/RepositoryList/repositoryList.component";
@@ -84,13 +84,6 @@ const HomePage = () => {
     const updatedSignatories = newEnvelope.signatories.filter((_, i) => i !== index);
     updateNewEnvelope("signatories", updatedSignatories);
   };
-
-  // UseEffect para buscar envelopes ao alterar o termo de busca
-  useEffect(() => {
-    if (searchTerm) {
-      handleSearch();
-    }
-  }, [searchTerm]);
 
   return (
     <HomeContainer>
