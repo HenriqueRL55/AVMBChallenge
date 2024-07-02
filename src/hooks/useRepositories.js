@@ -1,10 +1,13 @@
+// React Hooks
 import { useState, useEffect } from "react";
+// API Services
 import fetchService from "../services/api/documentAPI";
 
 const useRepositories = () => {
   const [repositoryList, setRepositoryList] = useState([]);
   const [message, setMessage] = useState("");
 
+  // Obtém os repositórios do usuário
   const getRepositories = async () => {
     try {
       const repositoryParams = {
@@ -30,6 +33,7 @@ const useRepositories = () => {
     }
   };
 
+  // Cria um novo repositório com o nome fornecido
   const createRepository = async (newRepositoryName) => {
     try {
       const repositoryParams = {
@@ -71,6 +75,7 @@ const useRepositories = () => {
     }
   };
 
+  // Obtém envelopes por repositório
   const getEnvelopesByRepository = async (repositoryId) => {
     try {
       const envelopesParams = {
@@ -114,6 +119,7 @@ const useRepositories = () => {
     }
   };
 
+  // UseEffect para buscar repositórios ao montar o componente
   useEffect(() => {
     getRepositories();
   }, []);
@@ -122,7 +128,7 @@ const useRepositories = () => {
     repositoryList,
     message,
     createRepository,
-    getEnvelopesByRepository
+    getEnvelopesByRepository,
   };
 };
 

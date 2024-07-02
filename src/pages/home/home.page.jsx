@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+// React Hooks
+import React, { useState, useEffect } from "react";
+// Componentes Customizados
 import RepositoryCreation from "../../components/RepositoryCreation/repositoryCreation.component";
 import RepositoryList from "../../components/RepositoryList/repositoryList.component";
 import DocumentCreation from "../../components/DocumentCreation/documentCreation.component";
 import DocumentStatus from "../../components/DocumentStatus/documentStatus.component";
 import DocumentQuery from "../../components/DocumentQuery/documentQuery.component";
+import AlertMessage from "../../components/AlertMessage/alertMessage.component";
+// Hooks Customizados
 import useRepositories from "../../hooks/useRepositories";
 import useDocuments from "../../hooks/useDocuments";
+// Serviço de Autenticação
 import { useAuth } from "../../services/auth";
+// Componentes Estilizados
 import {
   HomeContainer,
   LogoutButton,
@@ -15,11 +21,13 @@ import {
   ListRepository,
   ButtonCreate,
 } from "./home.styles";
-import AlertMessage from "../../components/AlertMessage/alertMessage.component";
 
 const HomePage = () => {
+  // Hook customizado para gerenciar a autenticação
   const { logout } = useAuth();
+  // Hook customizado para gerenciar repositórios
   const { repositoryList, createRepository, getEnvelopesByRepository } = useRepositories();
+  // Hook customizado para gerenciar documentos
   const {
     isModalOpen,
     closeModal,
@@ -39,15 +47,18 @@ const HomePage = () => {
     openDocumentDetails,
   } = useDocuments();
 
+  // Gerenciamento de estado local
   const [newRepositoryName, setNewRepositoryName] = useState("");
   const [envelopes, setEnvelopes] = useState({});
   const [activeTab, setActiveTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Função para criar um novo repositório
   const handleCreateRepository = () => {
     createRepository(newRepositoryName);
   };
 
+  // Função para carregar envelopes de um repositório específico
   const handleAccordionChange = async (repositoryId) => {
     if (!envelopes[repositoryId]) {
       const repositoryEnvelopes = await getEnvelopesByRepository(repositoryId);
@@ -58,18 +69,28 @@ const HomePage = () => {
     }
   };
 
+  // Função para pesquisar documentos
   const handleSearch = async () => {
     await pesquisarEnvelope(searchTerm);
   };
 
+  // Função para alterar a aba ativa no modal de criação de documento
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
+  // Função para remover um signatário do novo envelope
   const removeSignatory = (index) => {
     const updatedSignatories = newEnvelope.signatories.filter((_, i) => i !== index);
     updateNewEnvelope("signatories", updatedSignatories);
   };
+
+  // UseEffect para buscar envelopes ao alterar o termo de busca
+  useEffect(() => {
+    if (searchTerm) {
+      handleSearch();
+    }
+  }, [searchTerm]);
 
   return (
     <HomeContainer>
@@ -97,7 +118,7 @@ const HomePage = () => {
             handleAccordionChange={handleAccordionChange}
           />
         </ListRepository>
-        {loading && <p>Loading...</p>}
+        {loading && <p>Carregando...</p>}
         {message && <p>{message}</p>}
         {documentList.length > 0 && (
           <div>

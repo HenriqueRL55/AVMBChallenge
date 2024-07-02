@@ -1,4 +1,7 @@
+// React hooks
 import React, { useState } from "react";
+
+// Material UI
 import {
   Box,
   Button,
@@ -17,27 +20,31 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+// Componente de criação de documentos
 const DocumentCreation = ({
-  isModalOpen,
-  closeModal,
-  activeTab,
-  handleTabChange,
-  newEnvelope,
-  updateNewEnvelope,
-  addSignatory,
-  updateSignatory,
-  removeSignatory,
-  createEnvelope,
-  repositoryList,
+  isModalOpen,          // Estado para controle de abertura do modal
+  closeModal,           // Função para fechar o modal
+  activeTab,            // Estado da aba ativa
+  handleTabChange,      // Função para mudar a aba ativa
+  newEnvelope,          // Estado do novo envelope
+  updateNewEnvelope,    // Função para atualizar o estado do novo envelope
+  addSignatory,         // Função para adicionar um novo signatário
+  updateSignatory,      // Função para atualizar um signatário existente
+  removeSignatory,      // Função para remover um signatário existente
+  createEnvelope,       // Função para criar um novo envelope
+  repositoryList,       // Lista de repositórios
 }) => {
-  const [errorMessages, setErrorMessages] = useState([]);
+  const [errorMessages, setErrorMessages] = useState([]); // Estado para mensagens de erro
 
+  // Seleciona o repositório baseado no ID do envelope
   const selectedRepository =
     repositoryList.find((repo) => repo.id === newEnvelope.repositoryId) || null;
 
+  // Função para criar um novo envelope, validando os campos necessários
   const handleCreateEnvelope = () => {
     const errors = [];
 
+    // Validações dos campos do envelope
     if (!newEnvelope.file) {
       errors.push("Por favor, selecione um arquivo para o documento.");
     }
@@ -48,6 +55,7 @@ const DocumentCreation = ({
       errors.push("Por favor, selecione um repositório.");
     }
 
+    // Validações dos campos dos signatários
     newEnvelope.signatories.forEach((signatory, index) => {
       if (!signatory.name) {
         errors.push(`Por favor, preencha o nome do signatário ${index + 1}.`);
@@ -57,6 +65,7 @@ const DocumentCreation = ({
       }
     });
 
+    // Exibe as mensagens de erro, se houver
     if (errors.length > 0) {
       setErrorMessages(errors);
       return;
@@ -64,6 +73,7 @@ const DocumentCreation = ({
     createEnvelope();
   };
 
+  // Função para fechar o Snackbar de erro
   const handleCloseSnackbar = () => {
     setErrorMessages([]);
   };

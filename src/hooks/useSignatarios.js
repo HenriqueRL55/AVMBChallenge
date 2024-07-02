@@ -1,4 +1,6 @@
+// React Hooks
 import { useState } from "react";
+// API Services
 import fetchService from "../services/api/documentAPI";
 
 const useSignatarios = () => {
@@ -6,6 +8,7 @@ const useSignatarios = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Obtém os signatários de um envelope específico
   const getSignatariosPorEnvelope = async (idEnvelope) => {
     setLoading(true);
     setError(null);
@@ -21,6 +24,7 @@ const useSignatarios = () => {
     }
   };
 
+  // Atualiza os dados de um signatário de envelope
   const atualizarSignatarioEnvelope = async (signatarioEnvelope) => {
     setLoading(true);
     setError(null);
@@ -37,6 +41,7 @@ const useSignatarios = () => {
     }
   };
 
+  // Exclui um signatário de envelope
   const excluirSignatarioEnvelope = async (idSignatarioEnv) => {
     setLoading(true);
     setError(null);
@@ -54,6 +59,7 @@ const useSignatarios = () => {
     }
   };
 
+  // Insere um novo signatário em um envelope
   const inserirSignatarioEnvelope = async (signatarioEnvelope) => {
     setLoading(true);
     setError(null);

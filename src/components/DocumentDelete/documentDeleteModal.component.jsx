@@ -1,7 +1,13 @@
+// React
 import React from "react";
+
+// Material UI
 import { Modal, Box, Button, Typography as MuiTypography } from "@mui/material";
+
+// Estilização
 import { Typography } from "./documentDeleteModal.styles";
 
+// Componente de modal para confirmação de exclusão de envelope
 const DeleteConfirmModal = ({ open, onClose, onConfirm }) => {
   return (
     <Modal open={open} onClose={onClose}>

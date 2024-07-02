@@ -1,7 +1,13 @@
+// React
 import React from "react";
-import { Modal, Box, Button, Typography as MuiTypography } from "@mui/material";
+
+// Material UI
+import { Modal, Box, Button } from "@mui/material";
+
+// Estilização
 import { StyledTypography as Typography } from "./forwardAssignModal.styles";
 
+// Componente de modal para encaminhar envelope
 const ForwardAssignModal = ({ open, onClose, onConfirm }) => {
   return (
     <Modal open={open} onClose={onClose}>

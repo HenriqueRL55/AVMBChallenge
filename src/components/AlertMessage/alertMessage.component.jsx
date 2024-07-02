@@ -1,6 +1,10 @@
+// React
 import React from "react";
+
+// Material UI
 import { Snackbar, Alert } from "@mui/material";
 
+// Componente de mensagem de alerta
 const AlertMessage = ({
   open,
   onClose,

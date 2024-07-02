@@ -1,6 +1,10 @@
+// React
 import React from "react";
+
+// Estilização
 import { CreateButton, FormContainer, Input } from "./documentQuery.styles";
 
+// Componente para consulta de documentos
 const DocumentQuery = ({ setSearchTerm, handleSearch }) => {
   return (
     <FormContainer>

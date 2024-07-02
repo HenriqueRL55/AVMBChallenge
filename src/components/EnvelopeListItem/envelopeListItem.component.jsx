@@ -1,8 +1,14 @@
+// React
 import React from 'react';
+
+// Material UI
 import { ListItem, ListItemText, IconButton } from '@mui/material';
 import { Edit, Send, Delete, Download } from '@mui/icons-material';
+
+// Hooks
 import { getStatusDescription } from '../../hooks/useDocuments';
 
+// Componente para item de envelope na lista
 const EnvelopeListItem = ({
   envelope,
   openSignatariosModal,

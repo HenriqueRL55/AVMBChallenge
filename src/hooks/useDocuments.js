@@ -1,7 +1,11 @@
-import { useState } from "react";
+// React Hooks
+import { useState, useEffect } from "react";
+// API Services
 import fetchService from "../services/api/documentAPI";
+// Utility Functions
 import { readFileAsBase64 } from "../utils/fileUtils";
 
+// Obtém a descrição do status com base no código do status
 const getStatusDescription = (status) => {
   switch (status) {
     case '1':
@@ -37,15 +41,22 @@ const useDocuments = () => {
     signatories: [],
   });
 
+  // Abre o modal
   const openModal = () => setIsModalOpen(true);
+
+  // Fecha o modal e limpa o documento selecionado
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedDocument(null);
   };
 
+  // Abre o modal de criação de envelope
   const openCreateEnvelopeModal = () => setIsCreateEnvelopeModalOpen(true);
+
+  // Fecha o modal de criação de envelope
   const closeCreateEnvelopeModal = () => setIsCreateEnvelopeModalOpen(false);
 
+  // Atualiza o novo envelope com o campo e valor fornecidos
   const updateNewEnvelope = (field, value) => {
     setNewEnvelope((prevEnvelope) => ({
       ...prevEnvelope,
@@ -53,6 +64,7 @@ const useDocuments = () => {
     }));
   };
 
+  // Adiciona um novo signatário ao envelope
   const addSignatory = () => {
     setNewEnvelope((prevEnvelope) => ({
       ...prevEnvelope,
@@ -60,6 +72,7 @@ const useDocuments = () => {
     }));
   };
 
+  // Atualiza um signatário específico no envelope
   const updateSignatory = (index, field, value) => {
     const updatedSignatories = newEnvelope.signatories.map((signatory, i) =>
       i === index ? { ...signatory, [field]: value } : signatory
@@ -70,6 +83,7 @@ const useDocuments = () => {
     }));
   };
 
+  // Cria um novo envelope com os dados fornecidos
   const createEnvelope = async () => {
     if (!newEnvelope.file) {
       setMessage("Por favor, selecione um arquivo para o documento.");
@@ -143,6 +157,7 @@ const useDocuments = () => {
     }
   };
 
+  // Encaminha o envelope para assinaturas
   const encaminharEnvelopeParaAssinaturas = async (idEnvelope) => {
     setLoading(true);
     setError(null);
@@ -163,6 +178,7 @@ const useDocuments = () => {
     }
   };
 
+  // Exclui o envelope (expurga)
   const expurgarEnvelope = async (idEnvelope) => {
     setLoading(true);
     setError(null);
@@ -177,6 +193,7 @@ const useDocuments = () => {
     }
   };
 
+  // Pesquisa envelopes com base no texto fornecido
   const pesquisarEnvelope = async (textoPesquisa) => {
     setLoading(true);
     setError(null);
@@ -208,6 +225,7 @@ const useDocuments = () => {
     }
   };
 
+  // Obtém os signatários de um envelope específico
   const getSignatariosPorEnvelope = async (idEnvelope) => {
     setLoading(true);
     setError(null);
@@ -222,6 +240,7 @@ const useDocuments = () => {
     }
   };
 
+  // Faz o download do PDF de um envelope usando seu hash
   const downloadPDFEnvelope = async (hashSHA256) => {
     setLoading(true);
     setError(null);
@@ -240,6 +259,7 @@ const useDocuments = () => {
     }
   };
 
+  // Abre os detalhes de um documento específico
   const openDocumentDetails = (document) => {
     setSelectedDocument(document);
     openModal();

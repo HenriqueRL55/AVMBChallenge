@@ -1,4 +1,7 @@
+// React
 import React from "react";
+
+// Material UI
 import {
   Box,
   Button,
@@ -7,24 +10,29 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
+
+// Estilização
 import { StyledTypography as Typography } from "./documentStatus.styles";
+
+// Hooks
 import { getStatusDescription } from "../../hooks/useDocuments";
 
+// Componente de status do documento
 const DocumentStatus = ({ isModalOpen, closeModal, documentInfo, loading, message }) => {
   return (
     <>
       {loading && <CircularProgress sx={{ mt: 2 }} />}
       <Modal open={isModalOpen} onClose={closeModal}>
-      <Box
-        sx={{
-          width: { xs: "90%", sm: "80%", md: "60%", lg: "40%" },
-          p: { xs: 2, sm: 3, md: 4 },
-          bgcolor: "background.paper",
-          m: "auto",
-          mt: { xs: "20%", sm: "15%", md: "10%", lg: "5%" },
-          borderRadius: 2,
-          boxShadow: 24,
-        }}
+        <Box
+          sx={{
+            width: { xs: "90%", sm: "80%", md: "60%", lg: "40%" },
+            p: { xs: 2, sm: 3, md: 4 },
+            bgcolor: "background.paper",
+            m: "auto",
+            mt: { xs: "20%", sm: "15%", md: "10%", lg: "5%" },
+            borderRadius: 2,
+            boxShadow: 24,
+          }}
         >
           {documentInfo ? (
             <Box>

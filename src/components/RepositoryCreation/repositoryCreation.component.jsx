@@ -1,10 +1,14 @@
+// React
 import React from "react";
+
+// Estilização
 import {
   FormContainer,
   Input,
   CreateButton,
 } from "./repositoryCreation.styles";
 
+// Componente de criação de repositório
 const RepositoryCreation = ({ createRepository, setNewRepositoryName }) => {
   return (
     <FormContainer>

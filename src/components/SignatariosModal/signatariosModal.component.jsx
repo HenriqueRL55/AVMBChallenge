@@ -1,3 +1,4 @@
+// Importações necessárias
 import React, { useEffect, useState } from "react";
 import {
   Modal,
@@ -9,10 +10,11 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { Edit, Delete, Add, Send } from "@mui/icons-material";
+import { Edit, Delete, Add } from "@mui/icons-material";
 import useSignatarios from "../../hooks/useSignatarios";
 import { StyledTypography as Typography } from "./signatariosModal.styles";
 
+// Componente do Modal de Signatários
 const SignatariosModal = ({ open, onClose, envelopeId }) => {
   const {
     signatarios,
@@ -24,23 +26,26 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
     inserirSignatarioEnvelope,
     encaminharEnvelopeParaAssinaturas,
   } = useSignatarios();
-  const [editSignatario, setEditSignatario] = useState(null);
-  const [editData, setEditData] = useState({});
-  const [newSignatarios, setNewSignatarios] = useState([]);
-  const [warning, setWarning] = useState("");
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
+  const [editSignatario, setEditSignatario] = useState(null); // Estado para edição de signatário
+  const [editData, setEditData] = useState({}); // Estado para dados de edição
+  const [newSignatarios, setNewSignatarios] = useState([]); // Estado para novos signatários
+  const [warning, setWarning] = useState(""); // Estado para avisos
+
+  // Efeito para buscar signatários quando o modal é aberto
   useEffect(() => {
     if (open) {
       getSignatariosPorEnvelope(envelopeId);
     }
   }, [open, envelopeId]);
 
+  // Função para iniciar a edição de um signatário
   const handleEdit = (signatario) => {
     setEditSignatario(signatario.id);
     setEditData(signatario.ConfigAssinatura);
   };
 
+  // Função para atualizar um signatário
   const handleUpdate = async () => {
     try {
       await atualizarSignatarioEnvelope({
@@ -57,6 +62,7 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
     }
   };
 
+  // Função para excluir um signatário
   const handleDelete = async (id) => {
     if (signatarios.length === 1) {
       setWarning("Não é possível ficar sem signatários");
@@ -73,10 +79,12 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
     }
   };
 
+  // Função para lidar com mudanças nos campos de edição
   const handleChange = (field, value) => {
     setEditData((prevData) => ({ ...prevData, [field]: value }));
   };
 
+  // Função para adicionar um novo signatário
   const handleAddNewSignatario = () => {
     setNewSignatarios([
       ...newSignatarios,
@@ -84,6 +92,7 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
     ]);
   };
 
+  // Função para lidar com mudanças nos campos de novos signatários
   const handleNewSignatarioChange = (index, field, value) => {
     const updatedNewSignatarios = newSignatarios.map((signatario, i) =>
       i === index ? { ...signatario, [field]: value } : signatario
@@ -91,6 +100,7 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
     setNewSignatarios(updatedNewSignatarios);
   };
 
+  // Função para salvar novos signatários
   const handleSaveNewSignatarios = async () => {
     try {
       for (const signatario of newSignatarios) {
@@ -117,19 +127,6 @@ const SignatariosModal = ({ open, onClose, envelopeId }) => {
       getSignatariosPorEnvelope(envelopeId);
     } catch (error) {
       console.error("Erro ao inserir signatário:", error);
-    }
-  };
-
-  const openConfirmModal = () => setIsConfirmModalOpen(true);
-  const closeConfirmModal = () => setIsConfirmModalOpen(false);
-
-  const handleConfirm = async () => {
-    try {
-      await encaminharEnvelopeParaAssinaturas(envelopeId);
-      setIsConfirmModalOpen(false);
-      onClose();
-    } catch (error) {
-      console.error("Erro ao encaminhar envelope para assinaturas:", error);
     }
   };
 

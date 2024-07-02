@@ -1,4 +1,7 @@
+// React
 import React from "react";
+
+//Material UI
 import {
   Accordion,
   AccordionSummary,
@@ -7,8 +10,11 @@ import {
   List,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
+
+// Componentes
 import EnvelopeListItem from "../EnvelopeListItem/envelopeListItem.component";
 
+// Componente de accordion do repositório
 const RepositoryAccordion = ({
   repository,
   expanded,

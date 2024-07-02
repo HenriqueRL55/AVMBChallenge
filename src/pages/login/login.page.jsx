@@ -1,21 +1,33 @@
+// React Hooks
 import React, { useState, useEffect } from "react";
+
+// React Router Dom
 import { useNavigate } from "react-router-dom";
+
+// Autenticação
 import { useAuth } from "../../services/auth";
+
+// Material UI
 import { Button, TextField } from "@mui/material";
+
+// Estilização
 import { LoginContainer, FormBox, StyledTypography } from "./login.styles";
 
+// Componente de página de login
 export const LoginPage = () => {
-  const { signIn, signInWithGoogle, currentUser } = useAuth();
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const { signIn, signInWithGoogle, currentUser } = useAuth(); 
+  const navigate = useNavigate(); 
+  const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("");
 
+  // Efeito que redireciona para a página inicial se o usuário estiver autenticado
   useEffect(() => {
     if (currentUser) {
       navigate("/home");
     }
   }, [currentUser, navigate]);
 
+  // Função para navegar para a página de registro
   const goToRegister = () => {
     navigate("/register");
   };

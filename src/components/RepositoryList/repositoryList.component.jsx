@@ -1,20 +1,18 @@
+// React Hooks
 import React, { useState, useEffect } from 'react';
-import {
-  Snackbar,
-  Alert,
-} from '@mui/material';
+// Material UI
+import { Snackbar, Alert } from '@mui/material';
+// Componentes Customizados
 import RepositoryAccordion from '../RepositoryAccordion/repositoryAccordion.component';
 import SignatariosModal from '../SignatariosModal/signatariosModal.component';
 import ForwardAssignModal from '../ForwardAssignModal/forwardAssignModal.component';
 import DeleteConfirmModal from '../DocumentDelete/documentDeleteModal.component';
+// Hooks Customizados
 import useDocuments from '../../hooks/useDocuments';
-import { getStatusDescription } from '../../hooks/useDocuments';
+// Funções Auxiliares
+import { fetchSignatarios, handleDownloadPDF, confirmEnvelopeDelete } from '../../helpers/repositoryListHelpers';
 
-const RepositoryList = ({
-  repositoryList,
-  envelopes,
-  handleAccordionChange,
-}) => {
+const RepositoryList = ({ repositoryList, envelopes, handleAccordionChange }) => {
   const [loadingEnvelopes, setLoadingEnvelopes] = useState({});
   const [expanded, setExpanded] = useState(false);
   const [selectedEnvelope, setSelectedEnvelope] = useState(null);
@@ -31,21 +29,14 @@ const RepositoryList = ({
     downloadPDFEnvelope,
   } = useDocuments();
 
+  // useEffect para buscar signatários quando um envelope é selecionado
   useEffect(() => {
     if (selectedEnvelope) {
-      fetchSignatarios(selectedEnvelope);
+      fetchSignatarios(getSignatariosPorEnvelope, selectedEnvelope, setSignatarios);
     }
   }, [selectedEnvelope]);
 
-  const fetchSignatarios = async (envelopeId) => {
-    try {
-      const response = await getSignatariosPorEnvelope(envelopeId);
-      setSignatarios(response || []);
-    } catch (error) {
-      console.error('Erro ao buscar signatários:', error);
-    }
-  };
-
+  // Função para lidar com a mudança de acordeão
   const handleChange = (repositoryId) => (event, isExpanded) => {
     setExpanded(isExpanded ? repositoryId : false);
     setLoadingEnvelopes((prev) => ({ ...prev, [repositoryId]: true }));
@@ -54,16 +45,19 @@ const RepositoryList = ({
     });
   };
 
+  // Função para abrir o modal de signatários
   const openSignatariosModal = (envelopeId) => {
     setSelectedEnvelope(envelopeId);
     setIsSignatariosModalOpen(true);
   };
 
+  // Função para fechar o modal de signatários
   const closeSignatariosModal = () => {
     setIsSignatariosModalOpen(false);
     setSelectedEnvelope(null);
   };
 
+  // Função para confirmar o encaminhamento de um envelope para assinaturas
   const handleConfirm = async () => {
     if (!signatarios || signatarios.length === 0) {
       setAlertSeverity('warning');
@@ -84,13 +78,14 @@ const RepositoryList = ({
     return false;
   };
 
+  // Função para abrir o modal de encaminhamento de assinaturas
   const openForwardAssignModal = async (envelope) => {
     if (envelope.status !== '1') {
       setAlertSeverity('warning');
       setMessage('Esse envelope já foi encaminhado para assinatura.');
       return;
     }
-    await fetchSignatarios(envelope.id);
+    await fetchSignatarios(getSignatariosPorEnvelope, envelope.id, setSignatarios);
     if (!signatarios || signatarios.length === 0) {
       setAlertSeverity('warning');
       setMessage('Não foi possível enviar pois não há signatários vinculados a esse envelope.');
@@ -100,32 +95,18 @@ const RepositoryList = ({
     setIsForwardAssignModalOpen(true);
   };
 
+  // Função para fechar o modal de encaminhamento de assinaturas
   const closeForwardAssignModal = () => {
     setIsForwardAssignModalOpen(false);
     setSelectedEnvelope(null);
   };
 
+  // Função para iniciar o download do envelope
   const handleDownload = async (envelope) => {
-    try {
-      const { envelopeContent, nomeArquivo, mimeType } = await downloadPDFEnvelope(envelope.hashSHA256);
-      if (envelopeContent) {
-        const link = document.createElement('a');
-        link.href = `data:${mimeType};base64,${envelopeContent}`;
-        link.download = nomeArquivo;
-        link.click();
-        setAlertSeverity('success');
-        setMessage('Download iniciado.');
-      } else {
-        setAlertSeverity('warning');
-        setMessage('Conteúdo do envelope não encontrado.');
-      }
-    } catch (error) {
-      setAlertSeverity('error');
-      setMessage('Erro ao baixar o envelope.');
-      console.error('Erro ao baixar o envelope:', error);
-    }
+    await handleDownloadPDF(downloadPDFEnvelope, envelope, setAlertSeverity, setMessage);
   };
 
+  // Função para lidar com a exclusão de um envelope
   const handleDelete = async (envelopeId, status) => {
     if (status === '2') {
       setAlertSeverity('warning');
@@ -136,21 +117,12 @@ const RepositoryList = ({
     setIsDeleteConfirmModalOpen(true);
   };
 
+  // Função para confirmar a exclusão de um envelope
   const confirmDelete = async () => {
-    try {
-      await expurgarEnvelope(selectedEnvelope);
-      setAlertSeverity('success');
-      setMessage('Envelope excluído com sucesso!');
-    } catch (error) {
-      setAlertSeverity('error');
-      setMessage('Erro ao excluir envelope.');
-      console.error('Erro ao excluir envelope:', error);
-    } finally {
-      setIsDeleteConfirmModalOpen(false);
-      setSelectedEnvelope(null);
-    }
+    await confirmEnvelopeDelete(expurgarEnvelope, selectedEnvelope, setAlertSeverity, setMessage, closeDeleteConfirmModal);
   };
 
+  // Função para fechar o modal de confirmação de exclusão
   const closeDeleteConfirmModal = () => {
     setIsDeleteConfirmModalOpen(false);
     setSelectedEnvelope(null);
