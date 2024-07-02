@@ -27,7 +27,6 @@ O projeto tem como objetivo consumir as APIs da Asten Assinatura para a criaçã
 
 ## Tecnologias Utilizadas
 
-- **Node.js (LTS)**: Plataforma de desenvolvimento backend.
 - **Swagger**: Ferramenta para documentação de APIs.
 - **React**: Biblioteca JavaScript para construção de interfaces de usuário.
 - **Material-UI**: Biblioteca de componentes React para um design elegante e responsivo.
