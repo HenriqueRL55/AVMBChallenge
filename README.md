@@ -1,6 +1,6 @@
 # AVMBChallenge
 
-Este repositório é destinado ao desafio para a posição de desenvolvedor Frontend na empresa AVMB. O desafio consiste em consumir APIs da plataforma Asten Assinatura para criar, configurar e gerenciar envelopes digitais. O objetivo é criar um frontend que consuma esses serviços via backend, disponibilizando-os em uma API documentada com Swagger.
+Este repositório é destinado ao desafio para a posição de desenvolvedor Frontend na empresa AVMB. O desafio consiste em consumir APIs da plataforma Asten Assinatura para criar, configurar e gerenciar envelopes digitais. O objetivo é criar um frontend que consuma esses serviços.
 
 ## Índice
 
@@ -27,7 +27,6 @@ O projeto tem como objetivo consumir as APIs da Asten Assinatura para a criaçã
 
 ## Tecnologias Utilizadas
 
-- **Swagger**: Ferramenta para documentação de APIs.
 - **React**: Biblioteca JavaScript para construção de interfaces de usuário.
 - **Material-UI**: Biblioteca de componentes React para um design elegante e responsivo.
 - **Firebase**: Plataforma para autenticação e gerenciamento de banco de dados.
