@@ -122,7 +122,7 @@ const useRepositories = () => {
     repositoryList,
     message,
     createRepository,
-    getEnvelopesByRepository,
+    getEnvelopesByRepository
   };
 };
 

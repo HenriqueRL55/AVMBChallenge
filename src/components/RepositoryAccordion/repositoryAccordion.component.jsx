@@ -19,7 +19,6 @@ const RepositoryAccordion = ({
   openForwardAssignModal,
   handleDownload,
   handleDelete,
-  getStatusDescription,
 }) => {
   return (
     <Accordion
@@ -50,7 +49,6 @@ const RepositoryAccordion = ({
                     openForwardAssignModal={openForwardAssignModal}
                     handleDownload={handleDownload}
                     handleDelete={handleDelete}
-                    getStatusDescription={getStatusDescription}
                   />
                 ))
               ) : (

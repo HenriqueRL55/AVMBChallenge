@@ -2,12 +2,33 @@ import { useState } from "react";
 import fetchService from "../services/api/documentAPI";
 import { readFileAsBase64 } from "../utils/fileUtils";
 
+const getStatusDescription = (status) => {
+  switch (status) {
+    case '1':
+      return 'Em construção';
+    case '2':
+      return 'Aguardando Assinaturas';
+    case '3':
+      return 'Concluído';
+    case '4':
+      return 'Arquivado';
+    case '5':
+      return 'Cancelado';
+    case '6':
+      return 'Expirado';
+    default:
+      return 'Desconhecido';
+  }
+};
+
 const useDocuments = () => {
   const [documentList, setDocumentList] = useState([]);
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [isCreateEnvelopeModalOpen, setIsCreateEnvelopeModalOpen] = useState(false);
   const [newEnvelope, setNewEnvelope] = useState({
     file: null,
     description: "",
@@ -17,7 +38,13 @@ const useDocuments = () => {
   });
 
   const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedDocument(null);
+  };
+
+  const openCreateEnvelopeModal = () => setIsCreateEnvelopeModalOpen(true);
+  const closeCreateEnvelopeModal = () => setIsCreateEnvelopeModalOpen(false);
 
   const updateNewEnvelope = (field, value) => {
     setNewEnvelope((prevEnvelope) => ({
@@ -50,6 +77,7 @@ const useDocuments = () => {
     }
 
     try {
+      setLoading(true);
       const base64File = await readFileAsBase64(newEnvelope.file);
 
       const envelopeParams = {
@@ -103,13 +131,15 @@ const useDocuments = () => {
       const envelopeResponse = await fetchService("inserirEnvelope", envelopeParams);
       if (envelopeResponse?.response) {
         setMessage("Envelope criado com sucesso!");
-        closeModal();
+        closeCreateEnvelopeModal();
       } else if (envelopeResponse?.error) {
         setMessage(`Erro ao criar envelope: ${JSON.stringify(envelopeResponse.error)}`);
       }
     } catch (error) {
       setMessage("Erro ao criar envelope");
       console.error("Error creating envelope:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -147,14 +177,31 @@ const useDocuments = () => {
     }
   };
 
-  const consultarEnvelope = async (envelopeIdOrName) => {
+  const pesquisarEnvelope = async (textoPesquisa) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetchService("consultarEnvelope", { envelopeIdOrName });
-      return response;
+      const response = await fetchService("pesquisarEnvelopes", {
+        textoPesquisa,
+        pesquisarEmTags: "S",
+        pesquisarEmEnvelopes: "S",
+        pesquisarEmSignatarios: "S",
+        considerarStatus: "S",
+        valoresStatus: "1,2",
+        maxRegistros: 10,
+      });
+      if (response?.response) {
+        setDocumentList(response.response);
+        if (response.response.length > 0) {
+          setSelectedDocument(response.response[0]);
+          openModal();
+        }
+      } else {
+        setMessage("Nenhum documento encontrado.");
+      }
     } catch (err) {
       setError(err);
+      setMessage("Erro ao consultar documentos.");
       throw err;
     } finally {
       setLoading(false);
@@ -193,14 +240,23 @@ const useDocuments = () => {
     }
   };
 
+  const openDocumentDetails = (document) => {
+    setSelectedDocument(document);
+    openModal();
+  };
+
   return {
     documentList,
     message,
     isModalOpen,
+    isCreateEnvelopeModalOpen,
     loading,
     error,
+    selectedDocument,
     openModal,
     closeModal,
+    openCreateEnvelopeModal,
+    closeCreateEnvelopeModal,
     newEnvelope,
     updateNewEnvelope,
     addSignatory,
@@ -208,10 +264,12 @@ const useDocuments = () => {
     createEnvelope,
     encaminharEnvelopeParaAssinaturas,
     expurgarEnvelope,
-    consultarEnvelope,
+    pesquisarEnvelope,
     getSignatariosPorEnvelope,
     downloadPDFEnvelope,
+    openDocumentDetails,
   };
 };
 
 export default useDocuments;
+export { getStatusDescription };

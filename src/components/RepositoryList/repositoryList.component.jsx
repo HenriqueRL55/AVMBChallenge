@@ -8,6 +8,7 @@ import SignatariosModal from '../SignatariosModal/signatariosModal.component';
 import ForwardAssignModal from '../ForwardAssignModal/forwardAssignModal.component';
 import DeleteConfirmModal from '../DocumentDelete/documentDeleteModal.component';
 import useDocuments from '../../hooks/useDocuments';
+import { getStatusDescription } from '../../hooks/useDocuments';
 
 const RepositoryList = ({
   repositoryList,
@@ -42,25 +43,6 @@ const RepositoryList = ({
       setSignatarios(response || []);
     } catch (error) {
       console.error('Erro ao buscar signatários:', error);
-    }
-  };
-
-  const getStatusDescription = (status) => {
-    switch (status) {
-      case '1':
-        return 'Em construção';
-      case '2':
-        return 'Aguardando Assinaturas';
-      case '3':
-        return 'Concluído';
-      case '4':
-        return 'Arquivado';
-      case '5':
-        return 'Cancelado';
-      case '6':
-        return 'Expirado';
-      default:
-        return 'Desconhecido';
     }
   };
 
@@ -188,7 +170,6 @@ const RepositoryList = ({
           openForwardAssignModal={openForwardAssignModal}
           handleDownload={handleDownload}
           handleDelete={handleDelete}
-          getStatusDescription={getStatusDescription}
         />
       ))}
       <SignatariosModal

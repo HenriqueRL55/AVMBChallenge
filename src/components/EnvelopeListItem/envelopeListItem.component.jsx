@@ -1,6 +1,7 @@
 import React from 'react';
 import { ListItem, ListItemText, IconButton } from '@mui/material';
 import { Edit, Send, Delete, Download } from '@mui/icons-material';
+import { getStatusDescription } from '../../hooks/useDocuments';
 
 const EnvelopeListItem = ({
   envelope,
@@ -8,7 +9,6 @@ const EnvelopeListItem = ({
   openForwardAssignModal,
   handleDownload,
   handleDelete,
-  getStatusDescription,
 }) => {
   return (
     <ListItem

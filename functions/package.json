@@ -15,7 +15,9 @@
   "dependencies": {
     "@mui/icons-material": "^5.15.21",
     "firebase-admin": "^12.2.0",
-    "firebase-functions": "^5.0.0"
+    "firebase-functions": "^5.0.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "firebase-functions-test": "^3.1.0"

@@ -5,7 +5,7 @@ const DocumentQuery = ({ setSearchTerm, handleSearch }) => {
   return (
     <FormContainer>
       <Input
-        label="Nome ou ID do Documento"
+        label="Nome do Envelope"
         variant="outlined"
         onChange={(e) => setSearchTerm(e.target.value)}
         fullWidth
